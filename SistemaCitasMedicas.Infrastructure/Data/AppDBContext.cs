@@ -18,7 +18,7 @@ namespace SistemaCitasMedicas.Infrastructure.Data
         // DbSets de todas las entidades
         public DbSet<Cita> Citas { get; set; }
         public DbSet<Doctor> Doctores { get; set; }
-        public DbSet<DoctorEspecializacion> DoctoresEspecializaciones { get; set; }
+        public DbSet<DoctorEspecializacion> DoctorEspecializaciones { get; set; }
         public DbSet<Especializacion> Especializaciones { get; set; }
         public DbSet<HistorialMedico> HistorialesMedicos { get; set; }
         public DbSet<Paciente> Pacientes { get; set; }
