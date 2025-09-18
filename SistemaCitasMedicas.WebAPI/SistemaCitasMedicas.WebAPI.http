@@ -1,0 +1,6 @@
+@SistemaCitasMedicas.WebAPI_HostAddress = http://localhost:5197
+
+GET {{SistemaCitasMedicas.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
