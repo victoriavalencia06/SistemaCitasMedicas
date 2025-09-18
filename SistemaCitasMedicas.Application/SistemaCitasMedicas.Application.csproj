@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SistemaCitasMedicas.Domain\SistemaCitasMedicas.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

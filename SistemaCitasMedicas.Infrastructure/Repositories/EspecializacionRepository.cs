@@ -1,12 +1,54 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaCitasMedicas.Domain.Entities;
+using SistemaCitasMedicas.Domain.Repositories;
+using SistemaCitasMedicas.Infrastructure.Data;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Infrastructure.Repositories
 {
-    internal class EspecializacionRepository
+    public class EspecializacionRepository : IEspecializacionRepository
     {
+        private readonly AppDBContext _context;
+
+        public EspecializacionRepository(AppDBContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Especializacion>> GetEspecializacionesAsync()
+        {
+            return await _context.Especializaciones.ToListAsync();
+        }
+
+        public async Task<Especializacion> GetEspecializacionByIdAsync(int id)
+        {
+            return await _context.Especializaciones.FindAsync(id);
+        }
+
+        public async Task<Especializacion> AddEspecializacionAsync(Especializacion especializacion)
+        {
+            _context.Especializaciones.Add(especializacion);
+            await _context.SaveChangesAsync();
+            return especializacion;
+        }
+
+        public async Task<Especializacion> UpdateEspecializacionAsync(Especializacion especializacion)
+        {
+            _context.Entry(especializacion).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return especializacion;
+        }
+
+        public async Task<bool> DeleteEspecializacionAsync(int id)
+        {
+            var especializacion = await _context.Especializaciones.FindAsync(id);
+            if (especializacion == null) return false;
+
+            _context.Especializaciones.Remove(especializacion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

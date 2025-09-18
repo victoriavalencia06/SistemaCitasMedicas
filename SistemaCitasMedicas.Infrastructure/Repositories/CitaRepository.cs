@@ -1,12 +1,54 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaCitasMedicas.Domain.Entities;
+using SistemaCitasMedicas.Domain.Repositories;
+using SistemaCitasMedicas.Infrastructure.Data;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Infrastructure.Repositories
 {
-    internal class CitaRepository
+    public class CitaRepository : ICitaRepository
     {
+        private readonly AppDBContext _context;
+
+        public CitaRepository(AppDBContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Cita>> GetCitasAsync()
+        {
+            return await _context.Citas.ToListAsync();
+        }
+
+        public async Task<Cita> GetCitaByIdAsync(int id)
+        {
+            return await _context.Citas.FindAsync(id);
+        }
+
+        public async Task<Cita> AddCitaAsync(Cita cita)
+        {
+            _context.Citas.Add(cita);
+            await _context.SaveChangesAsync();
+            return cita;
+        }
+
+        public async Task<Cita> UpdateCitaAsync(Cita cita)
+        {
+            _context.Entry(cita).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return cita;
+        }
+
+        public async Task<bool> DeleteCitaAsync(int id)
+        {
+            var cita = await _context.Citas.FindAsync(id);
+            if (cita == null) return false;
+
+            _context.Citas.Remove(cita);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
