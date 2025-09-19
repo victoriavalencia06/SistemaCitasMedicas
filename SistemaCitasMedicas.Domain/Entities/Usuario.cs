@@ -1,21 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
+    [Table("Usuario")]
     public class Usuario
     {
+        [Key]
+        [Column("IdUsuario")]
         public long IdUsuario { get; set; }
-        public int IdRol { get; set; }
-        public string Nombre { get; set; }
-        public string Correo { get; set; }
-        public string Password { get; set; }
-        public int Estado { get; set; }
 
-        // Propiedad de navegación para la relación con Rol
+        [Required]
+        [Column("IdRol")]
+        public int IdRol { get; set; }
+
+        [ForeignKey("IdRol")]
         public Rol Rol { get; set; }
+
+        [Required, MaxLength(100)]
+        [Column("Nombre")]
+        public string Nombre { get; set; }
+
+        [Required, MaxLength(20)]
+        [Column("Correo")]
+        public string Correo { get; set; }
+
+        [Required, MaxLength(255)]
+        [Column("Password")]
+        public string Password { get; set; }
+
+        [Required]
+        [Column("Estado")]
+        public int Estado { get; set; }
     }
 }

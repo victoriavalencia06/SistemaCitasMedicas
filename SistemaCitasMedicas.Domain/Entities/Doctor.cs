@@ -1,22 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
+    [Table("Doctor")]
     public class Doctor
     {
+        [Key]
+        [Column("IdDoctor")]
         public int IdDoctor { get; set; }
-        public long IdUsuario { get; set; }
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public string CedulaProfesional { get; set; }
-        public string Telefono { get; set; }
-        public DateTime Horario { get; set; } // Nota: En el UML dice "Hoario", probablemente sea "Horario"
 
-        // Propiedad de navegación
+        [Required]
+        [Column("IdUsuario")]
+        public long IdUsuario { get; set; }
+
+        [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
+
+        [Required, MaxLength(50)]
+        [Column("Nombre")]
+        public string Nombre { get; set; }
+
+        [Required, MaxLength(50)]
+        [Column("Apellido")]
+        public string Apellido { get; set; }
+
+        [Required, MaxLength(50)]
+        [Column("CedulaProfesional")]
+        public string CedulaProfesional { get; set; }
+
+        [Required, StringLength(8)]
+        [Column("Telefono")]
+        public string Telefono { get; set; }
+
+        [Required]
+        [Column("Horario")]
+        public DateTime Horario { get; set; }
+
+        [Required]
+        [Column("Estado")]
+        public int Estado { get; set; }
     }
 }
