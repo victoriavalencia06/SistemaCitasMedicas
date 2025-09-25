@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using SistemaCitasMedicas.Domain.Entities;
+using SistemaCitasMedicas.Application.Services;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
@@ -8,33 +8,83 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
     [ApiController]
     public class CitaController : ControllerBase
     {
-        // GET: api/<CitaController>
+        private readonly CitaService _citaService;
+
+        public CitaController(CitaService citaService)
+        {
+            _citaService = citaService;
+        }
+
+        // GET: api/cita
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<Cita>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var citas = await _citaService.ObtenerTodasCitasAsync();
+                return Ok(citas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
-        // GET api/<CitaController>/5
+        // GET api/cita/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Cita>> GetById(int id)
         {
-            return "value";
+            try
+            {
+                var cita = await _citaService.ObtenerCitaPorIdAsync(id);
+                if (cita == null)
+                    return NotFound($"No se encontró una cita activa con ID {id}");
+
+                return Ok(cita);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
-        // POST api/<CitaController>
+        // POST api/cita
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] Cita cita)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var resultado = await _citaService.AgregarCitaAsync(cita);
+
+            if (resultado.StartsWith("Error"))
+                return BadRequest(resultado);
+
+            return Ok(resultado);
         }
 
-        // PUT api/<CitaController>/5
+        // PUT api/cita/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(int id, [FromBody] Cita cita)
         {
+            try
+            {
+                cita.IdCita = id; // Asegura que el ID coincida con el de la URL
+
+                var resultado = await _citaService.ModificarCitaAsync(cita);
+
+                if (resultado.StartsWith("Error"))
+                    return BadRequest(resultado);
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
-        // DELETE api/<CitaController>/5
+        // DELETE api/cita/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
