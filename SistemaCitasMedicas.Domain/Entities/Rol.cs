@@ -3,19 +3,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Rol")]
+    [Table("t_rol")]
     public class Rol
     {
         [Key]
-        [Column("IdRol")]
+        [Column("idrol")]
         public int IdRol { get; set; }
 
-        [Required, MaxLength(20)]
-        [Column("Nombre")]
+        [Required, MaxLength(75)]
+        [Column("nombre")]
         public string Nombre { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
+        public ICollection<Usuario>? Usuarios { get; set; }
+
     }
 }

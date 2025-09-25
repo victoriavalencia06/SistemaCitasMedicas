@@ -4,46 +4,48 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Paciente")]
+    [Table("t_paciente")]
     public class Paciente
     {
         [Key]
-        [Column("IdPaciente")]
+        [Column("idpaciente")]
         public int IdPaciente { get; set; }
 
         [Required]
-        [Column("IdUsuario")]
+        [Column("idusuario")]
         public long IdUsuario { get; set; }
-
-        [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
 
         [Required, MaxLength(100)]
-        [Column("Nombre")]
+        [Column("nombre")]
         public string Nombre { get; set; }
 
         [Required, MaxLength(100)]
-        [Column("Apellido")]
+        [Column("apellido")]
         public string Apellido { get; set; }
 
         [Required]
-        [Column("FechaNacimiento")]
+        [Column("fechanacimiento")]
         public DateTime FechaNacimiento { get; set; }
 
         [Required, StringLength(8)]
-        [Column("Telefono")]
+        [Column("telefono")]
         public string Telefono { get; set; }
 
         [Required, MaxLength(150)]
-        [Column("Direccion")]
+        [Column("direccion")]
         public string Direccion { get; set; }
 
         [Required, MaxLength(100)]
-        [Column("Seguro")]
+        [Column("seguro")]
         public string Seguro { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
+
+        public ICollection<Cita>? Citas { get; set; }
+        public HistorialMedico? HistorialMedico { get; set; }
+
     }
 }

@@ -4,40 +4,37 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Cita")]
+    [Table("t_cita")]
     public class Cita
     {
         [Key]
-        [Column("IdCita")]
+        [Column("idcita")]
         public int IdCita { get; set; }
 
         [Required]
-        [Column("IdUsuario")]
+        [Column("idusuario")]
         public long IdUsuario { get; set; }
 
-        [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
 
         [Required]
-        [Column("IdPaciente")]
+        [Column("idpaciente")]
         public int IdPaciente { get; set; }
 
-        [ForeignKey("IdPaciente")]
         public Paciente Paciente { get; set; }
 
         [Required]
-        [Column("IdDoctor")]
+        [Column("id_doctor")]
         public int IdDoctor { get; set; }
 
-        [ForeignKey("IdDoctor")]
         public Doctor Doctor { get; set; }
 
         [Required]
-        [Column("FechaHora")]
+        [Column("fechahora")]
         public DateTime FechaHora { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
     }
 }

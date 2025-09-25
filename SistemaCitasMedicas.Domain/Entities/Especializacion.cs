@@ -3,23 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Especializacion")]
+    [Table("t_especializacion")]
     public class Especializacion
     {
         [Key]
-        [Column("IdEspecializacion")]
+        [Column("idespecializacion")]
         public int IdEspecializacion { get; set; }
 
-        [Required, MaxLength(50)]
-        [Column("Nombre")]
+        [Required, MaxLength(75)]
+        [Column("nombre")]
         public string Nombre { get; set; }
 
         [MaxLength(100)]
-        [Column("Descripcion")]
+        [Column("descripcion")]
         public string Descripcion { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
+        public ICollection<DoctorEspecializacion>? DoctorEspecializaciones { get; set; }
+
     }
 }

@@ -3,34 +3,38 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Usuario")]
+    [Table("t_usuario")]
     public class Usuario
     {
         [Key]
-        [Column("IdUsuario")]
+        [Column("idusuario")]
         public long IdUsuario { get; set; }
 
         [Required]
-        [Column("IdRol")]
+        [Column("idrol")]
         public int IdRol { get; set; }
-
-        [ForeignKey("IdRol")]
         public Rol Rol { get; set; }
 
         [Required, MaxLength(100)]
-        [Column("Nombre")]
+        [Column("nombre")]
         public string Nombre { get; set; }
 
-        [Required, MaxLength(20)]
-        [Column("Correo")]
+        [Required, MaxLength(100)]
+        [Column("correo")]
         public string Correo { get; set; }
 
         [Required, MaxLength(255)]
-        [Column("Password")]
+        [Column("password")]
         public string Password { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
+
+        public ICollection<Cita>? Citas { get; set; }
+
+        // Relación 1:1 opcional
+        public Paciente? Paciente { get; set; }
+        public Doctor? Doctor { get; set; }
     }
 }

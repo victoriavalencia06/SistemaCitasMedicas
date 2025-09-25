@@ -4,42 +4,45 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
-    [Table("Doctor")]
+    [Table("t_doctor")]
     public class Doctor
     {
         [Key]
-        [Column("IdDoctor")]
+        [Column("id_doctor")]
         public int IdDoctor { get; set; }
 
         [Required]
-        [Column("IdUsuario")]
+        [Column("idusuario")]
         public long IdUsuario { get; set; }
 
-        [ForeignKey("IdUsuario")]
         public Usuario Usuario { get; set; }
 
-        [Required, MaxLength(50)]
-        [Column("Nombre")]
+        [Required, MaxLength(100)]
+        [Column("nombre")]
         public string Nombre { get; set; }
 
-        [Required, MaxLength(50)]
-        [Column("Apellido")]
+        [Required, MaxLength(100)]
+        [Column("apellido")]
         public string Apellido { get; set; }
 
-        [Required, MaxLength(50)]
-        [Column("CedulaProfesional")]
+        [Required, MaxLength(100)]
+        [Column("cedulaprofesional")]
         public string CedulaProfesional { get; set; }
 
         [Required, StringLength(8)]
-        [Column("Telefono")]
+        [Column("telefono")]
         public string Telefono { get; set; }
 
         [Required]
-        [Column("Horario")]
+        [Column("horario")]
         public DateTime Horario { get; set; }
 
         [Required]
-        [Column("Estado")]
+        [Column("estado")]
         public int Estado { get; set; }
+
+        public ICollection<DoctorEspecializacion>? DoctorEspecializaciones { get; set; }
+        public ICollection<Cita>? Citas { get; set; }
+
     }
 }
