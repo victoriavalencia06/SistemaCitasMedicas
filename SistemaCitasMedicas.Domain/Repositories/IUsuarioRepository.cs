@@ -13,7 +13,7 @@ namespace SistemaCitasMedicas.Domain.Repositories
         Task<IEnumerable<Usuario>> GetUsuariosAsync();
 
         // Obtener un usuario por su id
-        Task<Usuario> GetUsuarioByIdAsync(int id);
+        Task<Usuario> GetUsuarioByIdAsync(long id);
 
         // Agregar un nuevo usuario
         Task<Usuario> AddUsuarioAsync(Usuario usuario);
@@ -22,6 +22,6 @@ namespace SistemaCitasMedicas.Domain.Repositories
         Task<Usuario> UpdateUsuarioAsync(Usuario usuario);
 
         // Eliminar un usuario por su id
-        Task<bool> DeleteUsuarioAsync(int id);
+        Task<bool> DeleteUsuarioAsync(long id);
     }
 }

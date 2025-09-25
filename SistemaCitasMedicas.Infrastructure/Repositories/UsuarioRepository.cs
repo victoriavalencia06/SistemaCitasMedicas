@@ -22,7 +22,7 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             return await _context.Usuarios.ToListAsync();
         }
 
-        public async Task<Usuario> GetUsuarioByIdAsync(int id)
+        public async Task<Usuario> GetUsuarioByIdAsync(long id)
         {
             return await _context.Usuarios.FindAsync(id);
         }
@@ -41,7 +41,7 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             return usuario;
         }
 
-        public async Task<bool> DeleteUsuarioAsync(int id)
+        public async Task<bool> DeleteUsuarioAsync(long id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) return false;
