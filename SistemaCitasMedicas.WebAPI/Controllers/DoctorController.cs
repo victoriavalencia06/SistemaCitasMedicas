@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
@@ -8,36 +10,51 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
     [ApiController]
     public class DoctorController : ControllerBase
     {
-        // GET: api/<DoctorController>
+        private readonly DoctorService _doctorService;
+
+        public DoctorController(DoctorService doctorService) =>
+            _doctorService = doctorService;
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetTodos()
         {
-            return new string[] { "value1", "value2" };
+            var doctores = await _doctorService.ObtenerTodos();
+            return Ok(doctores);
         }
 
-        // GET api/<DoctorController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Doctor>> GetPorId(int id)
         {
-            return "value";
+            try
+            {
+                var doctor = await _doctorService.ObtenerPorId(id);
+                return Ok(doctor);
+            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (System.Exception ex) { return StatusCode(500, ex.Message); }
         }
 
-        // POST api/<DoctorController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<string>> Post([FromBody] Doctor doctor)
         {
+            var resultado = await _doctorService.Agregar(doctor);
+            return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
-        // PUT api/<DoctorController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<string>> Put(int id, [FromBody] Doctor doctor)
         {
+            if (id != doctor.IdDoctor) return BadRequest("El ID no coincide.");
+
+            var resultado = await _doctorService.Modificar(doctor);
+            return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
-        // DELETE api/<DoctorController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<string>> Delete(int id)
         {
+            var resultado = await _doctorService.Eliminar(id);
+            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
     }
 }

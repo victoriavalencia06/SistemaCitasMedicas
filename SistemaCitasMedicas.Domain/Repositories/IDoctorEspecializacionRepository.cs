@@ -9,19 +9,16 @@ namespace SistemaCitasMedicas.Domain.Repositories
 {
     public interface IDoctorEspecializacionRepository
     {
-        // Obtener todas las especializaciones de doctores
-        Task<IEnumerable<DoctorEspecializacion>> GetDoctorEspecializacionesAsync();
+        // Obtener todas las especializaciones asignadas a un doctor
+        Task<IEnumerable<DoctorEspecializacion>> GetEspecializacionesPorDoctorAsync(int doctorId);
 
-        // Obtener una especialización de doctor por su id
-        Task<DoctorEspecializacion> GetDoctorEspecializacionByIdAsync(int id);
+        // Obtener todos los doctores que tengan una especialización específica
+        Task<IEnumerable<DoctorEspecializacion>> GetDoctoresPorEspecializacionAsync(int especializacionId);
 
-        // Agregar una nueva especialización de doctor
-        Task<DoctorEspecializacion> AddDoctorEspecializacionAsync(DoctorEspecializacion doctorEspecializacion);
+        // Asignar una especialización a un doctor
+        Task<DoctorEspecializacion> AddDoctorEspecializacionAsync(DoctorEspecializacion relacion);
 
-        // Actualizar una especialización de doctor existente
-        Task<DoctorEspecializacion> UpdateDoctorEspecializacionAsync(DoctorEspecializacion doctorEspecializacion);
-
-        // Eliminar una especialización de doctor por su id
-        Task<bool> DeleteDoctorEspecializacionAsync(int id);
+        // Quitar una especialización de un doctor
+        Task<bool> DeleteDoctorEspecializacionAsync(int doctorId, int especializacionId);
     }
 }
