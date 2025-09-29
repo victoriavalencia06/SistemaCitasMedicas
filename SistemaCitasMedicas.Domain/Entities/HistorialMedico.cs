@@ -16,7 +16,7 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("idpaciente")]
         public int IdPaciente { get; set; }
         [JsonIgnore]
-        public Paciente Paciente { get; set; }
+        public Paciente? Paciente { get; set; }
 
         [Column("notas")]
         public string Notas { get; set; }

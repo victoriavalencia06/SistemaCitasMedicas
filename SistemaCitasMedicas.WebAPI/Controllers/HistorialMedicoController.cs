@@ -50,6 +50,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] HistorialMedico historialmedico)
         {
+            ModelState.Remove("Paciente");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
