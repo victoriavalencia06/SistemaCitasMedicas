@@ -52,8 +52,14 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Cita cita)
         {
+            ModelState.Remove("Usuario");
+            ModelState.Remove("Paciente");
+            ModelState.Remove("Doctor");
+
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             var resultado = await _citaService.AgregarCitaAsync(cita);
 
@@ -62,6 +68,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
 
             return Ok(resultado);
         }
+
 
         // PUT api/cita/5
         [HttpPut("{id}")]

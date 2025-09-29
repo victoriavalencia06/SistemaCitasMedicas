@@ -16,19 +16,19 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("idusuario")]
         public long IdUsuario { get; set; }
         [JsonIgnore]
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
 
         [Required]
         [Column("idpaciente")]
         public int IdPaciente { get; set; }
         [JsonIgnore]
-        public Paciente Paciente { get; set; }
+        public Paciente? Paciente { get; set; }
 
         [Required]
         [Column("id_doctor")]
         public int IdDoctor { get; set; }
         [JsonIgnore]
-        public Doctor Doctor { get; set; }
+        public Doctor? Doctor { get; set; }
 
         [Required]
         [Column("fechahora")]

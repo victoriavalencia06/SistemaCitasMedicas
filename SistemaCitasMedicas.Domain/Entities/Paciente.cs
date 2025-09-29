@@ -16,7 +16,7 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("idusuario")]
         public long IdUsuario { get; set; }
         [JsonIgnore]
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
 
         [Required, MaxLength(100)]
         [Column("nombre")]

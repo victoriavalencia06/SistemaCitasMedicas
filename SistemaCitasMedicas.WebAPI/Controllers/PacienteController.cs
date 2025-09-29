@@ -52,6 +52,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Paciente paciente)
         {
+            ModelState.Remove("Usuario");
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
