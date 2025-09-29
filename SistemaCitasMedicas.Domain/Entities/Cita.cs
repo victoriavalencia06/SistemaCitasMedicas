@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
@@ -14,19 +15,19 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Required]
         [Column("idusuario")]
         public long IdUsuario { get; set; }
-
+        [JsonIgnore]
         public Usuario Usuario { get; set; }
 
         [Required]
         [Column("idpaciente")]
         public int IdPaciente { get; set; }
-
+        [JsonIgnore]
         public Paciente Paciente { get; set; }
 
         [Required]
         [Column("id_doctor")]
         public int IdDoctor { get; set; }
-
+        [JsonIgnore]
         public Doctor Doctor { get; set; }
 
         [Required]

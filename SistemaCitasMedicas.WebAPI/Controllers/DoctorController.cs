@@ -37,6 +37,11 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] Doctor doctor)
         {
+            if (!ModelState.IsValid) 
+            {
+                ModelState.Remove("Usuario");
+                return BadRequest(ModelState);
+            }
             var resultado = await _doctorService.Agregar(doctor);
             return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }

@@ -52,8 +52,10 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         public async Task<IActionResult> Post([FromBody] Usuario usuario)
         {
             if (!ModelState.IsValid)
+            {
+                ModelState.Remove("Rol");
                 return BadRequest(ModelState);
-
+            }
             var resultado = await _usuarioService.AgregarUsuarioAsync(usuario);
 
             if (resultado.StartsWith("Error"))

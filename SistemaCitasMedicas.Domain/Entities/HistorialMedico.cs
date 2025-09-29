@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
@@ -14,6 +15,7 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Required]
         [Column("idpaciente")]
         public int IdPaciente { get; set; }
+        [JsonIgnore]
         public Paciente Paciente { get; set; }
 
         [Column("notas")]

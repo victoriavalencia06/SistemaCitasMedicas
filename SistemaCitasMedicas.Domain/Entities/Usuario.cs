@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
@@ -13,7 +14,8 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Required]
         [Column("idrol")]
         public int IdRol { get; set; }
-        public Rol Rol { get; set; }
+        [JsonIgnore]
+        public Rol? Rol { get; set; }
 
         [Required, MaxLength(100)]
         [Column("nombre")]
@@ -31,10 +33,14 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("estado")]
         public int Estado { get; set; }
 
+        [JsonIgnore]
         public ICollection<Cita>? Citas { get; set; }
 
         // Relación 1:1 opcional
+
+        [JsonIgnore]
         public Paciente? Paciente { get; set; }
+        [JsonIgnore]
         public Doctor? Doctor { get; set; }
     }
 }

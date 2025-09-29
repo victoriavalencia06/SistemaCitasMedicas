@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SistemaCitasMedicas.Domain.Entities
 {
@@ -17,6 +18,8 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Required]
         [Column("estado")]
         public int Estado { get; set; }
+
+        [JsonIgnore]
         public ICollection<Usuario>? Usuarios { get; set; }
 
     }
