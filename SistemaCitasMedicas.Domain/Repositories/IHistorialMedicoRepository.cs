@@ -9,19 +9,19 @@ namespace SistemaCitasMedicas.Domain.Repositories
 {
     public interface IHistorialMedicoRepository
     {
-        // Obtener todos los historiales médicos
+        // Obtener todos
         Task<IEnumerable<HistorialMedico>> GetHistorialesMedicosAsync();
 
-        // Obtener un historial médico por su id
-        Task<HistorialMedico> GetHistorialMedicoByIdAsync(int id);
+        // Obtener uno por Id
+        Task<HistorialMedico?> GetHistorialMedicoByIdAsync(int id);
 
-        // Agregar un nuevo historial médico
+        // Insertar nuevo
         Task<HistorialMedico> AddHistorialMedicoAsync(HistorialMedico historialMedico);
 
-        // Actualizar un historial médico existente
+        // Actualizar existente
         Task<HistorialMedico> UpdateHistorialMedicoAsync(HistorialMedico historialMedico);
 
-        // Eliminar un historial médico por su id
-        Task<bool> DeleteHistorialMedicoAsync(int id);
+        // Baja lógica: cambia estado a 0
+        Task<bool> DesactivarHistorialMedicoAsync(int id);
     }
 }

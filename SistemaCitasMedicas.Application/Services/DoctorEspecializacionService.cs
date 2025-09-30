@@ -12,13 +12,13 @@ namespace SistemaCitasMedicas.Application.Services
         public DoctorEspecializacionService(IDoctorEspecializacionRepository repo) =>
             _repo = repo;
 
-        public async Task<IEnumerable<DoctorEspecializacion>> ObtenerEspecializacionesDeDoctor(int doctorId) =>
+        public async Task<IEnumerable<DoctorEspecializacion>> ObtenerEspecializacionesDeDoctorAsync(int doctorId) =>
             await _repo.GetEspecializacionesPorDoctorAsync(doctorId);
 
-        public async Task<IEnumerable<DoctorEspecializacion>> ObtenerDoctoresPorEspecializacion(int especializacionId) =>
+        public async Task<IEnumerable<DoctorEspecializacion>> ObtenerDoctoresPorEspecializacionAsync(int especializacionId) =>
             await _repo.GetDoctoresPorEspecializacionAsync(especializacionId);
 
-        public async Task<string> AsignarEspecializacion(int doctorId, int especializacionId)
+        public async Task<string> AsignarEspecializacionAsync(int doctorId, int especializacionId)
         {
             var relacion = new DoctorEspecializacion
             {
@@ -30,7 +30,7 @@ namespace SistemaCitasMedicas.Application.Services
             return "Especialización asignada al doctor.";
         }
 
-        public async Task<string> QuitarEspecializacion(int doctorId, int especializacionId)
+        public async Task<string> QuitarEspecializacionAsync(int doctorId, int especializacionId)
         {
             var eliminado = await _repo.DeleteDoctorEspecializacionAsync(doctorId, especializacionId);
             return eliminado ? "Especialización removida del doctor." : "Error: relación no encontrada.";

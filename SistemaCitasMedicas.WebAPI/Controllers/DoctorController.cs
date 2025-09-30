@@ -18,7 +18,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetTodos()
         {
-            var doctores = await _doctorService.ObtenerTodos();
+            var doctores = await _doctorService.ObtenerTodosLosDoctoresAsync();
             return Ok(doctores);
         }
 
@@ -27,7 +27,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         {
             try
             {
-                var doctor = await _doctorService.ObtenerPorId(id);
+                var doctor = await _doctorService.ObtenerDoctorPorIdAsync(id);
                 return Ok(doctor);
             }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
@@ -42,7 +42,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
                 ModelState.Remove("Usuario");
                 return BadRequest(ModelState);
             }
-            var resultado = await _doctorService.Agregar(doctor);
+            var resultado = await _doctorService.AgregarDoctorAsync(doctor);
             return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
@@ -51,14 +51,14 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         {
             if (id != doctor.IdDoctor) return BadRequest("El ID no coincide.");
 
-            var resultado = await _doctorService.Modificar(doctor);
+            var resultado = await _doctorService.ModificarDoctorAsync(doctor);
             return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
-            var resultado = await _doctorService.Eliminar(id);
+            var resultado = await _doctorService.DesactivarDoctorPorIdAsync(id);
             return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
     }

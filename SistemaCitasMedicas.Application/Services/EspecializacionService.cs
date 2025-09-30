@@ -18,14 +18,14 @@ namespace SistemaCitasMedicas.Application.Services
         }
 
         //obtener todas las especializaciones
-        public async Task<IEnumerable<Especializacion>> ObtenerTodasLasEspecializaciones()
+        public async Task<IEnumerable<Especializacion>> ObtenerTodasLasEspecializacionesAsync()
         {
             var especializaciones = await _especializacionRepository.GetEspecializacionesAsync();
             return especializaciones.Where(e => e.Estado == 1);
         }
 
         //obtener una especializacion por id
-        public async Task<Especializacion> ObtenerEspecializacionPorId(int id)
+        public async Task<Especializacion> ObtenerEspecializacionPorIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("El ID de la especialización debe ser mayor que cero.");
@@ -40,7 +40,7 @@ namespace SistemaCitasMedicas.Application.Services
         }
 
         //agregar una nueva especializacion
-        public async Task<string> AgregarEspecializacion(Especializacion especializacion)
+        public async Task<string> AgregarEspecializacionAsync(Especializacion especializacion)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace SistemaCitasMedicas.Application.Services
         }
 
         //modificar una especializacion existente
-        public async Task<string> ModificarEspecializacion(Especializacion especializacion)
+        public async Task<string> ModificarEspecializacionAsync(Especializacion especializacion)
         {
             try
             {
@@ -91,6 +91,17 @@ namespace SistemaCitasMedicas.Application.Services
             {
                 return $"Error de servidor: {ex.Message}";
             }
+        }
+
+        // Cambia estado a inactivo en lugar de eliminar
+        public async Task<string> DesactivarEspecializacionByIdAsync(int id)
+        {
+            var especializacion = await _especializacionRepository.GetEspecializacionByIdAsync(id);
+            if (especializacion == null || especializacion.Estado == 0) return "Error: la especialización no existe o ya está inactiva.";
+
+            especializacion.Estado = 0;
+            await _especializacionRepository.UpdateEspecializacionAsync(especializacion);
+            return "Especialización desactivada exitosamente.";
         }
 
 

@@ -21,7 +21,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Especializacion>>> GetTodas()
         {
-            var especializaciones = await _especializacionService.ObtenerTodasLasEspecializaciones();
+            var especializaciones = await _especializacionService.ObtenerTodasLasEspecializacionesAsync();
             return Ok(especializaciones);
         }
 
@@ -31,7 +31,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         {
             try
             {
-                var especializacion = await _especializacionService.ObtenerEspecializacionPorId(id);
+                var especializacion = await _especializacionService.ObtenerEspecializacionPorIdAsync(id);
                 return Ok(especializacion);
             }
             catch (KeyNotFoundException ex)
@@ -48,7 +48,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] Especializacion especializacion)
         {
-            var resultado = await _especializacionService.AgregarEspecializacion(especializacion);
+            var resultado = await _especializacionService.AgregarEspecializacionAsync(especializacion);
             if (resultado.StartsWith("Error"))
                 return BadRequest(resultado);
 
@@ -62,7 +62,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             if (id != especializacion.IdEspecializacion)
                 return BadRequest("El ID del parámetro no coincide con el ID de la especialización.");
 
-            var resultado = await _especializacionService.ModificarEspecializacion(especializacion);
+            var resultado = await _especializacionService.ModificarEspecializacionAsync(especializacion);
             if (resultado.StartsWith("Error"))
                 return BadRequest(resultado);
 
@@ -73,22 +73,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
-            try
-            {
-                var especializacion = await _especializacionService.ObtenerEspecializacionPorId(id);
-                especializacion.Estado = 0; // Baja lógica, lo marcamos como inactivo
-                var resultado = await _especializacionService.ModificarEspecializacion(especializacion);
-
-                return Ok(resultado);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, $"Error del servidor: {ex.Message}");
-            }
+            var resultado = await _especializacionService.DesactivarEspecializacionByIdAsync(id);
+            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
     }
 }

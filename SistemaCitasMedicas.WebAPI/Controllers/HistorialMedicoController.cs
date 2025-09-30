@@ -86,10 +86,25 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // DELETE api/<HistorialMedicoController>/5
+        // DELETE api/historialmedico/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            try
+            {
+                var resultado = await _historialMedicoService.DesactivarHistorialMedicoAsync(id);
+
+                if (resultado.StartsWith("Error"))
+                    return BadRequest(resultado);
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                // 🔄 Registrar log aquí si tienes ILogger
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
+
     }
 }

@@ -14,10 +14,10 @@ namespace SistemaCitasMedicas.Application.Services
         public DoctorService(IDoctorRepository doctorRepository) =>
             _doctorRepository = doctorRepository;
 
-        public async Task<IEnumerable<Doctor>> ObtenerTodos() =>
+        public async Task<IEnumerable<Doctor>> ObtenerTodosLosDoctoresAsync() =>
             (await _doctorRepository.GetDoctoresAsync()).Where(d => d.Estado == 1);
 
-        public async Task<Doctor> ObtenerPorId(int id)
+        public async Task<Doctor> ObtenerDoctorPorIdAsync(int id)
         {
             if (id <= 0) throw new ArgumentException("El ID debe ser mayor que 0.");
             var doctor = await _doctorRepository.GetDoctorByIdAsync(id);
@@ -26,7 +26,7 @@ namespace SistemaCitasMedicas.Application.Services
             return doctor;
         }
 
-        public async Task<string> Agregar(Doctor doctor)
+        public async Task<string> AgregarDoctorAsync(Doctor doctor)
         {
             if (string.IsNullOrWhiteSpace(doctor.Nombre))
                 return "Error: el nombre es obligatorio.";
@@ -36,7 +36,7 @@ namespace SistemaCitasMedicas.Application.Services
             return nuevo.IdDoctor > 0 ? "Doctor agregado exitosamente." : "Error al insertar el doctor.";
         }
 
-        public async Task<string> Modificar(Doctor doctor)
+        public async Task<string> ModificarDoctorAsync(Doctor doctor)
         {
             var existente = await _doctorRepository.GetDoctorByIdAsync(doctor.IdDoctor);
             if (existente == null) return "Error: el doctor no existe.";
@@ -50,14 +50,14 @@ namespace SistemaCitasMedicas.Application.Services
         }
 
         // Cambia estado a inactivo en lugar de eliminar
-        public async Task<string> Eliminar(int id)
+        public async Task<string>DesactivarDoctorPorIdAsync(int id)
         {
             var doctor = await _doctorRepository.GetDoctorByIdAsync(id);
             if (doctor == null || doctor.Estado == 0) return "Error: el doctor no existe o ya está inactivo.";
 
             doctor.Estado = 0;
             await _doctorRepository.UpdateDoctorAsync(doctor);
-            return "Doctor inactivado exitosamente.";
+            return "Doctor desactivado exitosamente.";
         }
     }
 }

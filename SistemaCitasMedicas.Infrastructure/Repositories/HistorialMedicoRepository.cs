@@ -41,12 +41,13 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             return historialMedico;
         }
 
-        public async Task<bool> DeleteHistorialMedicoAsync(int id)
+        public async Task<bool> DesactivarHistorialMedicoAsync(int id)
         {
             var historial = await _context.HistorialesMedicos.FindAsync(id);
-            if (historial == null) return false;
+            if (historial == null || historial.Estado == 0) return false;
 
-            _context.HistorialesMedicos.Remove(historial);
+            historial.Estado = 0; // 👈 baja lógica
+            _context.Entry(historial).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return true;
         }
