@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaCitasMedicas.Infrast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaCitasMedicas.WebAPI", "SistemaCitasMedicas.WebAPI\SistemaCitasMedicas.WebAPI.csproj", "{1BF70CA4-5368-4463-9B9B-1498913D00DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaCitasMedicas.UnitTest.AppMSTest", "SistemaCitasMedicas.UnitTest.AppMSTest\SistemaCitasMedicas.UnitTest.AppMSTest.csproj", "{CD2840E4-3E17-422E-8CAE-5004E45FF495}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1BF70CA4-5368-4463-9B9B-1498913D00DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BF70CA4-5368-4463-9B9B-1498913D00DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BF70CA4-5368-4463-9B9B-1498913D00DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2840E4-3E17-422E-8CAE-5004E45FF495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2840E4-3E17-422E-8CAE-5004E45FF495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2840E4-3E17-422E-8CAE-5004E45FF495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2840E4-3E17-422E-8CAE-5004E45FF495}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
