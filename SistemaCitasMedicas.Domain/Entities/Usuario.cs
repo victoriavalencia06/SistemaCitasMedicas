@@ -27,7 +27,11 @@ namespace SistemaCitasMedicas.Domain.Entities
 
         [Required, MaxLength(255)]
         [Column("password")]
-        public string Password { get; set; }
+        public string PasswordHash { get; set; }
+
+        // Campo transitorio: NO va a BD; solo para entrada (registro/login)
+        [NotMapped]
+        public string? Password { get; set; }   // vendrá en el JSON del request
 
         [Required]
         [Column("estado")]

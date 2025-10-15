@@ -33,7 +33,7 @@ namespace SistemaCitasMedicas.Application.Services
             {
                 Nombre = nombre,
                 Correo = correo,
-                Password = hash,
+                PasswordHash = hash,
                 IdRol = idRol
             };
             await _repo.AddUsuarioAsync(usuario);
@@ -44,7 +44,7 @@ namespace SistemaCitasMedicas.Application.Services
         {
             var user = await _repo.GetByCorreoAsync(correo);
             if (user is null) return (false, "Credenciales inválidas");
-            if (!BCrypt.Net.BCrypt.Verify(password, user.Password)) return (false, "Credenciales inválidas");
+            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash)) return (false, "Credenciales inválidas");
             var token = GenerateJwt(user);
             return (true, token);
         }

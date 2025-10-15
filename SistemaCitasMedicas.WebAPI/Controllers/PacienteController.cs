@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SistemaCitasMedicas.Domain.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Domain.Entities;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PacienteController : ControllerBase

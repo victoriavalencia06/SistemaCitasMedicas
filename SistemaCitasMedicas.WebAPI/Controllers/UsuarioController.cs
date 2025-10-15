@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaCitasMedicas.Domain.Entities;
 using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Domain.Entities;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/usuario")]
     [ApiController]
     public class UsuarioController : ControllerBase

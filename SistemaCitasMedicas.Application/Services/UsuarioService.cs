@@ -64,8 +64,8 @@ namespace SistemaCitasMedicas.Application.Services
             {
                 var usuarios = await _repository.GetUsuariosAsync();
 
-                if (usuarios.Any(u => u.Nombre.ToLower() == nuevoUsuario.Nombre.ToLower()))
-                    return "Error: ya existe un usuario con el mismo nombre";
+                if (usuarios.Any(u => u.Correo.ToLower() == nuevoUsuario.Correo.ToLower()))
+                    return "Error: ya existe un usuario con el mismo correo";
 
                 nuevoUsuario.Estado = 1; // Activo por defecto
                 var usuarioInsertado = await _repository.AddUsuarioAsync(nuevoUsuario);
