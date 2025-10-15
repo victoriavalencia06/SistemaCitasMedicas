@@ -1,8 +1,6 @@
 ﻿using SistemaCitasMedicas.Domain.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Domain.Repositories
@@ -23,5 +21,8 @@ namespace SistemaCitasMedicas.Domain.Repositories
 
         // Eliminar un usuario por su id
         Task<bool> DeleteUsuarioAsync(long id);
+
+        // Verificar si el correo ya existe (requerido por AuthService)
+        Task<Usuario> GetByCorreoAsync(string correo);
     }
 }

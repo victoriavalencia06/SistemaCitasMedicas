@@ -1,83 +1,37 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    public class AuthController : Controller
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
     {
-        // GET: AuthController
-        public ActionResult Index()
+        private readonly AuthService _authService;
+
+        public AuthController(AuthService authService)
         {
-            return View();
+            _authService = authService;
         }
 
-        // GET: AuthController/Details/5
-        public ActionResult Details(int id)
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] Usuario usuario)
         {
-            return View();
+            var (ok, msg) = await _authService.RegisterAsync(usuario.Nombre, usuario.Correo, usuario.Password!, usuario.IdRol);
+            if (!ok) return BadRequest(new { message = msg });
+            return Ok(new { message = msg });
         }
 
-        // GET: AuthController/Create
-        public ActionResult Create()
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] Usuario usuario)
         {
-            return View();
-        }
-
-        // POST: AuthController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: AuthController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: AuthController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: AuthController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: AuthController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var (ok, tokenOrMsg) = await _authService.LoginAsync(usuario.Correo, usuario.Password!);
+            if (!ok) return Unauthorized(new { message = tokenOrMsg });
+            return Ok(new { token = tokenOrMsg });
         }
     }
 }

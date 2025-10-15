@@ -2,7 +2,6 @@
 using SistemaCitasMedicas.Domain.Entities;
 using SistemaCitasMedicas.Domain.Repositories;
 using SistemaCitasMedicas.Infrastructure.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -49,6 +48,11 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Usuario?> GetByCorreoAsync(string correo)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
         }
     }
 }
