@@ -83,6 +83,16 @@ namespace SistemaCitasMedicas.Application.Services
 
         }
 
-       
+        // Cambia estado a inactivo en lugar de eliminar
+        public async Task<string> DesactivarRolPorIdAsync(int id)
+        {
+            var doctor = await _repository.GetRolByIdAsync(id);
+            if (doctor == null || doctor.Estado == 0) return "Error: el rol no existe o ya está inactivo.";
+
+            doctor.Estado = 0;
+            await _repository.UpdateRolAsync(doctor);
+            return "Rol desactivado exitosamente.";
+        }
+
     }
 }

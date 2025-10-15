@@ -90,5 +90,16 @@ namespace SistemaCitasMedicas.Application.Services
 
             return "Paciente modificado correctamente";
         }
+
+        // Cambia estado a inactivo en lugar de eliminar
+        public async Task<string> DesactivaPacientePorIdAsync(int id)
+        {
+            var doctor = await _repository.GetPacienteByIdAsync(id);
+            if (doctor == null || doctor.Estado == 0) return "Error: el paciente no existe o ya está inactivo.";
+
+            doctor.Estado = 0;
+            await _repository.UpdatePacienteAsync(doctor);
+            return "Paciente desactivado exitosamente.";
+        }
     }
 }

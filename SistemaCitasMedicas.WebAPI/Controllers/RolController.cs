@@ -91,8 +91,10 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
 
         // DELETE api/<RolController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<string>> Delete(int id)
         {
+            var resultado = await _rolService.DesactivarRolPorIdAsync(id);
+            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
     }
 }

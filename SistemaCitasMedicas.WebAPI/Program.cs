@@ -4,36 +4,96 @@ using SistemaCitasMedicas.Domain.Repositories;
 using SistemaCitasMedicas.Infrastructure.Data;
 using SistemaCitasMedicas.Infrastructure.Repositories;
 
+// Librerías para JWT
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Conexión a la base de datos
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 36)),
     mySqlOptions => mySqlOptions.EnableRetryOnFailure()));
-// Inyectar otros servicios, repositorios, etc.
-builder.Services.AddScoped<ICitaRepository, CitaRepository>(); // tu implementación real
+
+// Inyeccion de dependencias
+builder.Services.AddScoped<ICitaRepository, CitaRepository>();
 builder.Services.AddScoped<CitaService>();
-builder.Services.AddScoped<IDoctorEspecializacionRepository, DoctorEspecializacionRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IDoctorEspecializacionRepository, DoctorEspecializacionRepository>();
 builder.Services.AddScoped<DoctorEspecializacionService>();
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<DoctorService>();
-builder.Services.AddScoped<IEspecializacionRepository, EspecializacionRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IEspecializacionRepository, EspecializacionRepository>();
 builder.Services.AddScoped<EspecializacionService>();
-builder.Services.AddScoped<IHistorialMedicoRepository, HistorialMedicoRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IHistorialMedicoRepository, HistorialMedicoRepository>();
 builder.Services.AddScoped<HistorialMedicoServices>();
-builder.Services.AddScoped<IPacienteRepository, PacienteRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<PacienteService>();
-builder.Services.AddScoped<IRolRepository, RolRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<RolService>();
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>(); // tu implementación real
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Configuramos Swagger para JWT
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Ingrese: Bearer {token}",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+        {
+            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+
+    c.AddSecurityDefinition("Bearer", securityScheme);
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        { securityScheme, Array.Empty<string>() }
+    });
+});
+
+var key = builder.Configuration["Jwt:Key"] ?? throw new Exception("Jwt:Key no configurada");
+var issuer = builder.Configuration["Jwt:Issuer"];
+var audience = builder.Configuration["Jwt:Audience"];
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        opt.RequireHttpsMetadata = false; // true si usas HTTPS en producción
+        opt.SaveToken = true;
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            ValidateIssuer = false,   // desactiva validación de emisor
+            ValidateAudience = false, // desactiva validación de audiencia
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+// Agregamos autorización
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -45,6 +105,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

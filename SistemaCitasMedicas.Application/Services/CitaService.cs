@@ -97,5 +97,16 @@ namespace SistemaCitasMedicas.Application.Services
 
             return "Cita modificada correctamente";
         }
+
+        // Cambia estado a inactivo en lugar de eliminar
+        public async Task<string> DesactivarCitaPorIdAsync(int id) 
+        {
+            var doctor = await _repository.GetCitaByIdAsync(id);
+            if (doctor == null || doctor.Estado == 0) return "Error: la cita no existe o ya está inactivo.";
+
+            doctor.Estado = 0;
+            await _repository.UpdateCitaAsync(doctor);
+            return "Cita desactivado exitosamente.";
+        }
     }
 }

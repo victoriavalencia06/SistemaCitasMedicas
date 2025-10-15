@@ -80,5 +80,16 @@ namespace SistemaCitasMedicas.Application.Services
                 return $"Error de servidor: {ex.Message}";
             }
         }
+
+        // Cambia estado a inactivo en lugar de eliminar
+        public async Task<string> DesactivarUsuarioPorIdAsync(int id)
+        {
+            var doctor = await _repository.GetUsuarioByIdAsync(id);
+            if (doctor == null || doctor.Estado == 0) return "Error: el usuario no existe o ya está inactivo.";
+
+            doctor.Estado = 0;
+            await _repository.UpdateUsuarioAsync(doctor);
+            return "Usuario desactivado exitosamente.";
+        }
     }
 }

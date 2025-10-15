@@ -93,8 +93,10 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
 
         // DELETE api/cita/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<string>> Delete(int id)
         {
+            var resultado = await _citaService.DesactivarCitaPorIdAsync(id);
+            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
     }
 }
