@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/doctorEspecializacion")]
+    [Authorize]
     public class DoctorEspecializacionController : ControllerBase
     {
         private readonly DoctorEspecializacionService _service;
@@ -17,20 +17,23 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         public DoctorEspecializacionController(DoctorEspecializacionService service) =>
             _service = service;
 
-        [HttpGet("doctor/{doctorId}")]
+        // GET: api/doctorEspecializacion/getByDoctor/5
+        [HttpGet("getByDoctor/{doctorId}")]
         public async Task<ActionResult<IEnumerable<DoctorEspecializacion>>> GetEspecializacionesDeDoctor(int doctorId)
         {
             var lista = await _service.ObtenerEspecializacionesDeDoctorAsync(doctorId);
             return Ok(lista);
         }
 
-        [HttpGet("especializacion/{especializacionId}")]
+        // GET: api/doctorEspecializacion/getByEspecializacion/3
+        [HttpGet("getByEspecializacion/{especializacionId}")]
         public async Task<ActionResult<IEnumerable<DoctorEspecializacion>>> GetDoctoresPorEspecializacion(int especializacionId)
         {
             var lista = await _service.ObtenerDoctoresPorEspecializacionAsync(especializacionId);
             return Ok(lista);
         }
 
+        // POST: api/doctorEspecializacion/asignar
         [HttpPost("asignar")]
         public async Task<ActionResult<string>> Asignar([FromQuery] int doctorId, [FromQuery] int especializacionId)
         {
@@ -38,6 +41,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(resultado);
         }
 
+        // DELETE: api/doctorEspecializacion/quitar
         [HttpDelete("quitar")]
         public async Task<ActionResult<string>> Quitar([FromQuery] int doctorId, [FromQuery] int especializacionId)
         {

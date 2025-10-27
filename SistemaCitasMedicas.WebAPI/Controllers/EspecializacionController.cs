@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/especializacion")]
+    [Authorize]
     public class EspecializacionController : ControllerBase
     {
         private readonly EspecializacionService _especializacionService;
@@ -19,16 +19,16 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             _especializacionService = especializacionService;
         }
 
-        // GET: api/Especializacion
-        [HttpGet]
+        // GET: api/especializacion/getAll
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Especializacion>>> GetTodas()
         {
             var especializaciones = await _especializacionService.ObtenerTodasLasEspecializacionesAsync();
             return Ok(especializaciones);
         }
 
-        // GET: api/Especializacion/5
-        [HttpGet("{id}")]
+        // GET: api/especializacion/get/5
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<Especializacion>> GetPorId(int id)
         {
             try
@@ -46,8 +46,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // POST: api/Especializacion
-        [HttpPost]
+        // POST: api/especializacion/create
+        [HttpPost("create")]
         public async Task<ActionResult<string>> Post([FromBody] Especializacion especializacion)
         {
             var resultado = await _especializacionService.AgregarEspecializacionAsync(especializacion);
@@ -57,8 +57,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(resultado);
         }
 
-        // PUT: api/Especializacion/5
-        [HttpPut("{id}")]
+        // PUT: api/especializacion/update/5
+        [HttpPut("update/{id}")]
         public async Task<ActionResult<string>> Put(int id, [FromBody] Especializacion especializacion)
         {
             if (id != especializacion.IdEspecializacion)
@@ -71,8 +71,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(resultado);
         }
 
-        // DELETE: api/Especializacion/5
-        [HttpDelete("{id}")]
+        // DELETE: api/especializacion/delete/5
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
             var resultado = await _especializacionService.DesactivarEspecializacionByIdAsync(id);

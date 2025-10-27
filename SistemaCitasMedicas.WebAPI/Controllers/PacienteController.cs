@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SistemaCitasMedicas.Application.Services;
 using SistemaCitasMedicas.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/paciente")]
+    [Authorize]
     public class PacienteController : ControllerBase
     {
         private readonly PacienteService _pacienteService;
@@ -17,8 +19,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             _pacienteService = pacienteService;
         }
 
-        // GET: api/paciente
-        [HttpGet]
+        // GET: api/paciente/getAll
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Paciente>>> Get()
         {
             try
@@ -32,8 +34,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // GET api/paciente/5
-        [HttpGet("{id}")]
+        // GET: api/paciente/get/5
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<Paciente>> GetById(int id)
         {
             try
@@ -50,8 +52,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // POST api/paciente
-        [HttpPost]
+        // POST: api/paciente/create
+        [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] Paciente paciente)
         {
             ModelState.Remove("Usuario");
@@ -67,8 +69,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(resultado);
         }
 
-        // PUT api/paciente/5
-        [HttpPut("{id}")]
+        // PUT: api/paciente/update/5
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Paciente paciente)
         {
             try
@@ -88,8 +90,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // DELETE api/paciente/5
-        [HttpDelete("{id}")]
+        // DELETE: api/paciente/delete/5
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
             var resultado = await _pacienteService.DesactivaPacientePorIdAsync(id);

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/doctor")]
+    [Authorize]
     public class DoctorController : ControllerBase
     {
         private readonly DoctorService _doctorService;
@@ -17,14 +17,16 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         public DoctorController(DoctorService doctorService) =>
             _doctorService = doctorService;
 
-        [HttpGet]
+        // GET: api/doctor/getAll
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetTodos()
         {
             var doctores = await _doctorService.ObtenerTodosLosDoctoresAsync();
             return Ok(doctores);
         }
 
-        [HttpGet("{id}")]
+        // GET: api/doctor/get/5
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<Doctor>> GetPorId(int id)
         {
             try
@@ -36,10 +38,11 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             catch (System.Exception ex) { return StatusCode(500, ex.Message); }
         }
 
-        [HttpPost]
+        // POST: api/doctor/create
+        [HttpPost("create")]
         public async Task<ActionResult<string>> Post([FromBody] Doctor doctor)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 ModelState.Remove("Usuario");
                 return BadRequest(ModelState);
@@ -48,7 +51,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
-        [HttpPut("{id}")]
+        // PUT: api/doctor/update/5
+        [HttpPut("update/{id}")]
         public async Task<ActionResult<string>> Put(int id, [FromBody] Doctor doctor)
         {
             if (id != doctor.IdDoctor) return BadRequest("El ID no coincide.");
@@ -57,7 +61,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return resultado.StartsWith("Error") ? BadRequest(resultado) : Ok(resultado);
         }
 
-        [HttpDelete("{id}")]
+        // DELETE: api/doctor/delete/5
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
             var resultado = await _doctorService.DesactivarDoctorPorIdAsync(id);

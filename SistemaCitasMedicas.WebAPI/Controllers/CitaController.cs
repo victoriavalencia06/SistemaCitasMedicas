@@ -6,7 +6,7 @@ using SistemaCitasMedicas.Domain.Entities;
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/cita")]
     [ApiController]
     public class CitaController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         }
 
         // GET: api/cita
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Cita>>> Get()
         {
             try
@@ -33,7 +33,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         }
 
         // GET api/cita/5
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<Cita>> GetById(int id)
         {
             try
@@ -51,7 +51,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         }
 
         // POST api/cita
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] Cita cita)
         {
             ModelState.Remove("Usuario");
@@ -73,7 +73,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
 
 
         // PUT api/cita/5
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Cita cita)
         {
             try
@@ -94,7 +94,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         }
 
         // DELETE api/cita/5
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
             var resultado = await _citaService.DesactivarCitaPorIdAsync(id);

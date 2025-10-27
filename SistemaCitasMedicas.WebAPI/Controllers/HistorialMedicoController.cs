@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Application.Services;
 using SistemaCitasMedicas.Domain.Entities;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
-    [Authorize]
-    [Route("api/historialmedico")]
     [ApiController]
+    [Route("api/historialmedico")]
+    [Authorize]
     public class HistorialMedicoController : ControllerBase
     {
         private readonly HistorialMedicoServices _historialMedicoService;
@@ -19,16 +19,16 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             _historialMedicoService = historialMedicoService;
         }
 
-        // GET: api/historialmedico/get
-        [HttpGet]
+        // GET: api/historialmedico/getAll
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<HistorialMedico>>> Get()
         {
             var historialesmedicos = await _historialMedicoService.ObtenerHistorialesMedicosActivosAsync();
             return Ok(historialesmedicos);
         }
 
-        // GET api/<HistorialMedicoController>/5
-        [HttpGet("{id}")]
+        // GET: api/historialmedico/get/5
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<HistorialMedico>> GetById(int id)
         {
             try
@@ -43,13 +43,12 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // aquí se podrá registrar el error con ILogger
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
 
-        // POST api/<HistorialMedicoController>
-        [HttpPost]
+        // POST: api/historialmedico/create
+        [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] HistorialMedico historialmedico)
         {
             ModelState.Remove("Paciente");
@@ -62,17 +61,15 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
                 return BadRequest(resultado);
 
             return Ok(resultado);
-
         }
 
-        // PUT api/<HistorialMedicoController>/5
-        [HttpPut("{id}")]
+        // PUT: api/historialmedico/update/5
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] HistorialMedico historialmedico)
         {
             try
             {
-                // El servicio valida si el id es válido o no coincide, no lo hacemos aquí
-                historialmedico.IdHistorialMedico = id; // nos aseguramos de que use el id de la ruta
+                historialmedico.IdHistorialMedico = id; // usa el id de la ruta
 
                 var resultado = await _historialMedicoService.ModificarHistorialMedicoAsync(historialmedico);
 
@@ -83,13 +80,12 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // 🔄 Registrar log aquí si tienes ILogger
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
 
-        // DELETE api/historialmedico/5
-        [HttpDelete("{id}")]
+        // DELETE: api/historialmedico/delete/5
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -103,10 +99,8 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // 🔄 Registrar log aquí si tienes ILogger
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
-
     }
 }
