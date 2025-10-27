@@ -42,7 +42,7 @@ namespace SistemaCitasMedicas.Application.Services
             existente.Nombre = usuario.Nombre;
             existente.Correo = usuario.Correo;
             existente.IdRol = usuario.IdRol;
-            existente.Password = usuario.Password;
+            existente.Password = usuario.PasswordHash;
             existente.Estado = usuario.Estado; // Permitir cambiar estado
 
             await _repository.UpdateUsuarioAsync(existente);

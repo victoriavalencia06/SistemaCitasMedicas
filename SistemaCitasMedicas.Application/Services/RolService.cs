@@ -72,7 +72,7 @@ namespace SistemaCitasMedicas.Application.Services
                     return "Error: no se pudo agreagar el rol";
 
 
-                return "Rol agregado correctamnete";
+                return "Rol agregado correctamente";
 
             }
             catch (Exception ex)
