@@ -4,14 +4,14 @@ using SistemaCitasMedicas.Domain.Repositories;
 using SistemaCitasMedicas.Infrastructure.Data;
 using SistemaCitasMedicas.Infrastructure.Repositories;
 
-// Librerías para JWT
+// Librerï¿½as para JWT
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Conexión a la base de datos
+// Conexiï¿½n a la base de datos
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 36)),
@@ -42,6 +42,9 @@ builder.Services.AddScoped<RolService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AuthService>();
+
+// Configuramos CORS
+builder.Services.AddCors();
 
 builder.Services.AddControllers();
 
@@ -79,20 +82,20 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
-        opt.RequireHttpsMetadata = false; // true si usas HTTPS en producción
+        opt.RequireHttpsMetadata = false; // true si usas HTTPS en producciï¿½n
         opt.SaveToken = true;
         opt.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-            ValidateIssuer = false,   // desactiva validación de emisor
-            ValidateAudience = false, // desactiva validación de audiencia
+            ValidateIssuer = false,   // desactiva validaciï¿½n de emisor
+            ValidateAudience = false, // desactiva validaciï¿½n de audiencia
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
     });
 
-// Agregamos autorización
+// Agregamos autorizaciï¿½n
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -105,6 +108,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Activamos CORS globalmente
+app.UseCors(policy =>
+    policy.AllowAnyOrigin()
+          .AllowAnyMethod()
+          .AllowAnyHeader());
 
 app.UseAuthentication();
 
