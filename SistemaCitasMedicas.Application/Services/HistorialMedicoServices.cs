@@ -65,9 +65,6 @@ namespace SistemaCitasMedicas.Application.Services
             {
                 var historiales = await _repository.GetHistorialesMedicosAsync();
 
-                if (!string.IsNullOrEmpty(nuevoHistorial.Diagnostico) &&
-                    historiales.Any(h => h.Diagnostico.ToLower() == nuevoHistorial.Diagnostico.ToLower()))
-                    return "Error: ya existe un historial con el mismo diagnóstico";
 
                 nuevoHistorial.Estado = 1; // Activo por defecto
                 var insertado = await _repository.AddHistorialMedicoAsync(nuevoHistorial);
