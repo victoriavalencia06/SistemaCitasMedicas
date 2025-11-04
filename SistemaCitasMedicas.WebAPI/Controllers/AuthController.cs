@@ -2,6 +2,7 @@
 using SistemaCitasMedicas.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SistemaCitasMedicas.Application.DTOs;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
 {
@@ -25,11 +26,12 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(new { message = msg });
         }
 
-        [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] Usuario usuario)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest req)
         {
-            var (ok, tokenOrMsg) = await _authService.LoginAsync(usuario.Correo, usuario.Password!);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var (ok, tokenOrMsg) = await _authService.LoginAsync(req.Correo, req.Password);
             if (!ok) return Unauthorized(new { message = tokenOrMsg });
             return Ok(new { token = tokenOrMsg });
         }
