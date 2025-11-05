@@ -90,5 +90,13 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             var resultado = await _rolService.DesactivarRolPorIdAsync(id);
             return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
         }
+
+        // RolController.cs
+        [HttpPut("reactivate/{id}")]
+        public async Task<ActionResult<string>> Reactivate(int id)
+        {
+            var resultado = await _rolService.ReactivarRolPorIdAsync(id);
+            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
+        }
     }
 }

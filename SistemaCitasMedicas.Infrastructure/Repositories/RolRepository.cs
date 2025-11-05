@@ -46,7 +46,19 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             var rol = await _context.Roles.FindAsync(id);
             if (rol == null) return false;
 
-            _context.Roles.Remove(rol);
+            rol.Estado = 0;
+            _context.Roles.Update(rol);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ActivateRolAsync(int id)
+        {
+            var rol = await _context.Roles.FindAsync(id);
+            if (rol == null) return false;
+
+            rol.Estado = 1;
+            _context.Roles.Update(rol);
             await _context.SaveChangesAsync();
             return true;
         }

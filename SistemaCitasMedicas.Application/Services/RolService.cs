@@ -51,8 +51,7 @@ namespace SistemaCitasMedicas.Application.Services
         // Caso de uso: Obtener solo roles activos
         public async Task<IEnumerable<Rol>> ObtenerRolesActivosAsync()
         {
-            var rol = await _repository.GetRolesAsync();
-            return rol.Where(p => p.Estado == 1);
+            return await _repository.GetRolesAsync();
         }
 
         // Caso de uso: Agregar rol (validar duplicado)
@@ -86,13 +85,29 @@ namespace SistemaCitasMedicas.Application.Services
         // Cambia estado a inactivo en lugar de eliminar
         public async Task<string> DesactivarRolPorIdAsync(int id)
         {
-            var doctor = await _repository.GetRolByIdAsync(id);
-            if (doctor == null || doctor.Estado == 0) return "Error: el rol no existe o ya está inactivo.";
+            var rol = await _repository.GetRolByIdAsync(id);
+            if (rol == null || rol.Estado == 0) return "Error: el rol no existe o ya está inactivo.";
 
-            doctor.Estado = 0;
-            await _repository.UpdateRolAsync(doctor);
+            rol.Estado = 0;
+            await _repository.UpdateRolAsync(rol);
             return "Rol desactivado exitosamente.";
         }
 
+        public async Task<string> ReactivarRolPorIdAsync(int id)
+        {
+            if (id <= 0) return "Error: Id no válido.";
+
+            var rol = await _repository.GetRolByIdAsync(id);
+            if (rol == null) return "Error: el rol no existe.";
+
+            if (rol.Estado == 1) return "Error: el rol ya está activo.";
+
+            rol.Estado = 1;
+            var rolActualizado = await _repository.UpdateRolAsync(rol);
+
+            if (rolActualizado == null) return "Error al reactivar el rol.";
+
+            return "Rol reactivado exitosamente.";
+        }
     }
 }
