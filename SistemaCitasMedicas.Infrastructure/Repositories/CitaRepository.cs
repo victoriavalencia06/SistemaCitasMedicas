@@ -19,8 +19,14 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
 
         public async Task<IEnumerable<Cita>> GetCitasAsync()
         {
-            return await _context.Citas.ToListAsync();
+            return await _context.Citas
+                .Include(c => c.Paciente)
+                    .ThenInclude(p => p.Usuario) // si el nombre está en Usuario
+                .Include(c => c.Doctor)
+                    .ThenInclude(d => d.Usuario) // si el nombre está en Usuario
+                .ToListAsync();
         }
+
 
         public async Task<Cita> GetCitaByIdAsync(int id)
         {

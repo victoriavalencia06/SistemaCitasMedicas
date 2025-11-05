@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Application.Services;
 using SistemaCitasMedicas.Domain.Entities;
 
@@ -17,14 +18,35 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             _citaService = citaService;
         }
 
-        // GET: api/cita
+        // DTO para devolver nombres en lugar de IDs
+        public class CitaDTO
+        {
+            public int IdCita { get; set; }
+            public string Paciente { get; set; }
+            public string Doctor { get; set; }
+            public DateTime FechaHora { get; set; }
+            public bool Estado { get; set; }
+        }
+
+        // GET: api/cita/getAll
         [HttpGet("getAll")]
-        public async Task<ActionResult<IEnumerable<Cita>>> Get()
+        public async Task<ActionResult<IEnumerable<CitaDTO>>> Get()
         {
             try
             {
                 var citas = await _citaService.ObtenerTodasCitasAsync();
-                return Ok(citas);
+
+                // Mapear citas a CitaDTO
+                var citasDTO = citas.Select(c => new CitaDTO
+                {
+                    IdCita = c.IdCita,
+                    Paciente = c.Paciente?.Nombre ?? "Sin paciente",
+                    Doctor = c.Doctor?.Nombre ?? "Sin doctor",
+                    FechaHora = c.FechaHora,
+                    Estado = c.Estado == 1
+                }).ToList();
+
+                return Ok(citasDTO);
             }
             catch (Exception ex)
             {
@@ -32,7 +54,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // GET api/cita/5
+        // GET api/cita/get/5
         [HttpGet("get/{id}")]
         public async Task<ActionResult<Cita>> GetById(int id)
         {
@@ -50,7 +72,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // POST api/cita
+        // POST api/cita/create
         [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] Cita cita)
         {
@@ -71,8 +93,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(resultado);
         }
 
-
-        // PUT api/cita/5
+        // PUT api/cita/update/5
         [HttpPut("update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Cita cita)
         {
@@ -93,7 +114,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
-        // DELETE api/cita/5
+        // DELETE api/cita/delete/5
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
