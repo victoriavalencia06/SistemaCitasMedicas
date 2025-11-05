@@ -36,12 +36,16 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             {
                 var citas = await _citaService.ObtenerTodasCitasAsync();
 
-                // Mapear citas a CitaDTO
+                // Mapear citas a CitaDTO con nombre completo
                 var citasDTO = citas.Select(c => new CitaDTO
                 {
                     IdCita = c.IdCita,
-                    Paciente = c.Paciente?.Nombre ?? "Sin paciente",
-                    Doctor = c.Doctor?.Nombre ?? "Sin doctor",
+                    Paciente = c.Paciente != null
+                        ? (c.Paciente.Nombre ?? "") + " " + (c.Paciente.Apellido ?? "")
+                        : "Sin paciente",
+                    Doctor = c.Doctor != null
+                        ? (c.Doctor.Nombre ?? "") + " " + (c.Doctor.Apellido ?? "")
+                        : "Sin doctor",
                     FechaHora = c.FechaHora,
                     Estado = c.Estado == 1
                 }).ToList();
