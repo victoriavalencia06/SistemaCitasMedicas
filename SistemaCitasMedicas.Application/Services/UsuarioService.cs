@@ -1,15 +1,13 @@
-﻿using System;
+﻿using SistemaCitasMedicas.Domain.Entities;
+using SistemaCitasMedicas.Domain.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using SistemaCitasMedicas.Domain.Entities;
-using SistemaCitasMedicas.Domain.Repositories;
+using BCrypt.Net;
 
 namespace SistemaCitasMedicas.Application.Services
 {
-    // Algoritmos con lógica de negocio (UseCase)
     public class UsuarioService
     {
         private readonly IUsuarioRepository _repository;
@@ -22,12 +20,12 @@ namespace SistemaCitasMedicas.Application.Services
         // Caso de uso: Buscar un usuario por Id (solo activos)
         public async Task<Usuario?> ObtenerUsuarioPorIdAsync(long id)
         {
-            if (id <= 0) return null; // Id no válido
+            if (id <= 0) return null;
 
             var usuario = await _repository.GetUsuarioByIdAsync(id);
             if (usuario != null && usuario.Estado == 1) return usuario;
 
-            return null; // No encontrado o inactivo
+            return null;
         }
 
         // Caso de uso: Modificar un usuario
@@ -42,8 +40,13 @@ namespace SistemaCitasMedicas.Application.Services
             existente.Nombre = usuario.Nombre;
             existente.Correo = usuario.Correo;
             existente.IdRol = usuario.IdRol;
-            existente.Password = usuario.PasswordHash;
-            existente.Estado = usuario.Estado; // Permitir cambiar estado
+            existente.Estado = usuario.Estado;
+
+            // ENCRIPTAR LA NUEVA CONTRASEÑA SI SE PROPORCIONA
+            if (!string.IsNullOrEmpty(usuario.Password))
+            {
+                existente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+            }
 
             await _repository.UpdateUsuarioAsync(existente);
 
@@ -67,6 +70,17 @@ namespace SistemaCitasMedicas.Application.Services
                 if (usuarios.Any(u => u.Correo.ToLower() == nuevoUsuario.Correo.ToLower()))
                     return "Error: ya existe un usuario con el mismo correo";
 
+                // ENCRIPTAR LA CONTRASEÑA ANTES DE GUARDAR
+                if (!string.IsNullOrEmpty(nuevoUsuario.Password))
+                {
+                    nuevoUsuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuevoUsuario.Password);
+                    nuevoUsuario.Password = null; // Limpiar el campo de texto plano
+                }
+                else
+                {
+                    return "Error: La contraseña es requerida";
+                }
+
                 nuevoUsuario.Estado = 1; // Activo por defecto
                 var usuarioInsertado = await _repository.AddUsuarioAsync(nuevoUsuario);
 
@@ -84,12 +98,41 @@ namespace SistemaCitasMedicas.Application.Services
         // Cambia estado a inactivo en lugar de eliminar
         public async Task<string> DesactivarUsuarioPorIdAsync(int id)
         {
-            var doctor = await _repository.GetUsuarioByIdAsync(id);
-            if (doctor == null || doctor.Estado == 0) return "Error: el usuario no existe o ya está inactivo.";
+            var usuario = await _repository.GetUsuarioByIdAsync(id);
+            if (usuario == null || usuario.Estado == 0)
+                return "Error: el usuario no existe o ya está inactivo.";
 
-            doctor.Estado = 0;
-            await _repository.UpdateUsuarioAsync(doctor);
+            usuario.Estado = 0;
+            await _repository.UpdateUsuarioAsync(usuario);
             return "Usuario desactivado exitosamente.";
+        }
+
+        // Método adicional: Reactivar usuario
+        public async Task<string> ReactivarUsuarioPorIdAsync(int id)
+        {
+            var usuario = await _repository.GetUsuarioByIdAsync(id);
+            if (usuario == null)
+                return "Error: el usuario no existe.";
+
+            usuario.Estado = 1;
+            await _repository.UpdateUsuarioAsync(usuario);
+            return "Usuario reactivado exitosamente.";
+        }
+
+        // Método adicional: Cambiar contraseña
+        public async Task<string> CambiarContraseñaAsync(int idUsuario, string nuevaPassword)
+        {
+            if (string.IsNullOrEmpty(nuevaPassword) || nuevaPassword.Length < 6)
+                return "Error: La contraseña debe tener al menos 6 caracteres";
+
+            var usuario = await _repository.GetUsuarioByIdAsync(idUsuario);
+            if (usuario == null)
+                return "Error: Usuario no encontrado";
+
+            usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuevaPassword);
+            await _repository.UpdateUsuarioAsync(usuario);
+
+            return "Contraseña cambiada exitosamente";
         }
     }
 }
