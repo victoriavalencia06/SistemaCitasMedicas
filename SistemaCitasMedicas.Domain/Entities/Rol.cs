@@ -21,6 +21,8 @@ namespace SistemaCitasMedicas.Domain.Entities
 
         [JsonIgnore]
         public ICollection<Usuario>? Usuarios { get; set; }
+        [JsonIgnore]
+        public ICollection<RolMenu>? RolMenus { get; set; }
 
     }
 }

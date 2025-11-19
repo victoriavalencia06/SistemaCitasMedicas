@@ -25,6 +25,10 @@ namespace SistemaCitasMedicas.Infrastructure.Data
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
+        // Nuevos DbSets
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<RolMenu> RolMenus { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Asignar nombre de tablas
@@ -36,62 +40,72 @@ namespace SistemaCitasMedicas.Infrastructure.Data
             modelBuilder.Entity<Paciente>().ToTable("t_paciente");
             modelBuilder.Entity<Rol>().ToTable("t_rol");
             modelBuilder.Entity<Usuario>().ToTable("t_usuario");
+            modelBuilder.Entity<Menu>().ToTable("t_menu");
+            modelBuilder.Entity<RolMenu>().ToTable("t_rol_menu");
 
-            // RELACIONES
-
-            // Usuario - Rol (N:1)
+            // RELACIONES EXISTENTES ----------------------------------
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Rol)
                 .WithMany(r => r.Usuarios)
                 .HasForeignKey(u => u.IdRol);
 
-            // Paciente - Usuario (1:1)
             modelBuilder.Entity<Paciente>()
                 .HasOne(p => p.Usuario)
                 .WithOne(u => u.Paciente)
                 .HasForeignKey<Paciente>(p => p.IdUsuario);
 
-            // Doctor - Usuario (1:1)
             modelBuilder.Entity<Doctor>()
                 .HasOne(d => d.Usuario)
                 .WithOne(u => u.Doctor)
                 .HasForeignKey<Doctor>(d => d.IdUsuario);
 
-            // Cita - Paciente (N:1)
             modelBuilder.Entity<Cita>()
                 .HasOne(c => c.Paciente)
                 .WithMany(p => p.Citas)
                 .HasForeignKey(c => c.IdPaciente);
 
-            // Cita - Doctor (N:1)
             modelBuilder.Entity<Cita>()
                 .HasOne(c => c.Doctor)
                 .WithMany(d => d.Citas)
                 .HasForeignKey(c => c.IdDoctor);
 
-            // Cita - Usuario (N:1) (por ejemplo, quien creó la cita)
             modelBuilder.Entity<Cita>()
                 .HasOne(c => c.Usuario)
                 .WithMany(u => u.Citas)
                 .HasForeignKey(c => c.IdUsuario);
 
-            // HistorialMedico - Paciente (1:1)
             modelBuilder.Entity<HistorialMedico>()
                 .HasOne(h => h.Paciente)
                 .WithOne(p => p.HistorialMedico)
                 .HasForeignKey<HistorialMedico>(h => h.IdPaciente);
 
-            // DoctorEspecializacion - Doctor (N:1)
             modelBuilder.Entity<DoctorEspecializacion>()
                 .HasOne(de => de.Doctor)
                 .WithMany(d => d.DoctorEspecializaciones)
                 .HasForeignKey(de => de.IdDoctor);
 
-            // DoctorEspecializacion - Especializacion (N:1)
             modelBuilder.Entity<DoctorEspecializacion>()
                 .HasOne(de => de.Especializacion)
                 .WithMany(e => e.DoctorEspecializaciones)
                 .HasForeignKey(de => de.IdEspecializacion);
+
+            // NUEVAS RELACIONES --------------------------------------
+            modelBuilder.Entity<RolMenu>()
+                .HasOne(rm => rm.Rol)
+                .WithMany(r => r.RolMenus)
+                .HasForeignKey(rm => rm.IdRol)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RolMenu>()
+                .HasOne(rm => rm.Menu)
+                .WithMany(m => m.RolMenus)
+                .HasForeignKey(rm => rm.IdMenu)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // UNIQUE para evitar duplicados rol-menu
+            modelBuilder.Entity<RolMenu>()
+                .HasIndex(rm => new { rm.IdRol, rm.IdMenu })
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }

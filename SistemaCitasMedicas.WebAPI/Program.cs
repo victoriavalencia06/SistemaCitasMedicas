@@ -37,7 +37,7 @@ builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<PacienteService>();
 
 builder.Services.AddScoped<IRolRepository, RolRepository>();
-builder.Services.AddScoped<RolService>();
+builder.Services.AddScoped<IRolService, RolService>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
