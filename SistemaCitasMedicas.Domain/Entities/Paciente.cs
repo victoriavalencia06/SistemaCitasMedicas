@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -48,8 +49,8 @@ namespace SistemaCitasMedicas.Domain.Entities
 
         [JsonIgnore]
         public ICollection<Cita>? Citas { get; set; }
-        [JsonIgnore]
-        public HistorialMedico? HistorialMedico { get; set; }
 
+        [JsonIgnore]
+        public ICollection<HistorialMedico>? Historiales { get; set; }
     }
 }

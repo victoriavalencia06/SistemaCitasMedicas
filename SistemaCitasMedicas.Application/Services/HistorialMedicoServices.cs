@@ -1,15 +1,11 @@
-﻿using System;
+﻿using SistemaCitasMedicas.Domain.Entities;
+using SistemaCitasMedicas.Domain.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using SistemaCitasMedicas.Domain.Entities;
-using SistemaCitasMedicas.Domain.Repositories;
 
 namespace SistemaCitasMedicas.Application.Services
 {
-    // Lógica de negocio (UseCases)
     public class HistorialMedicoServices
     {
         private readonly IHistorialMedicoRepository _repository;
@@ -19,60 +15,47 @@ namespace SistemaCitasMedicas.Application.Services
             _repository = repository;
         }
 
-        // Caso de uso: Buscar un historial médico por Id (solo activos)
         public async Task<HistorialMedico?> ObtenerHistorialMedicoPorIdAsync(int id)
         {
-            if (id <= 0) return null; // Id no válido
+            if (id <= 0) return null;
 
             var historial = await _repository.GetHistorialMedicoByIdAsync(id);
-            if (historial != null && historial.Estado == 1) return historial;
-
-            return null; // No encontrado o inactivo
+            return historial?.Estado == 1 ? historial : null;
         }
 
-        // Caso de uso: Modificar un historial médico
-        public async Task<string> ModificarHistorialMedicoAsync(HistorialMedico historial)
-        {
-            if (historial.IdHistorialMedico <= 0) return "Error: Id no válido";
-
-            var existente = await _repository.GetHistorialMedicoByIdAsync(historial.IdHistorialMedico);
-            if (existente == null) return "Error: Historial médico no encontrado";
-
-            // Actualizar propiedades
-            existente.Notas = historial.Notas;
-            existente.Diagnostico = historial.Diagnostico;
-            existente.Tratamientos = historial.Tratamientos;
-            existente.CuadroMedico = historial.CuadroMedico;
-            existente.FechaHora = historial.FechaHora;
-            existente.Estado = historial.Estado; // Permitir cambiar estado
-
-            await _repository.UpdateHistorialMedicoAsync(existente);
-
-            return "Historial médico modificado correctamente";
-        }
-
-        // Caso de uso: Obtener solo historiales médicos activos
         public async Task<IEnumerable<HistorialMedico>> ObtenerHistorialesMedicosActivosAsync()
         {
             var historiales = await _repository.GetHistorialesMedicosAsync();
-            return historiales.Where(h => h.Estado == 1);
+            return historiales.Where(x => x.Estado == 1);
         }
 
-        // Caso de uso: Agregar historial médico (validar duplicado por diagnostico)
+        // 👉 Agregar historial con validación de duplicado
         public async Task<string> AgregarHistorialMedicoAsync(HistorialMedico nuevoHistorial)
         {
             try
             {
-                var historiales = await _repository.GetHistorialesMedicosAsync();
+                if (nuevoHistorial.IdPaciente <= 0)
+                    return "Error: el historial debe pertenecer a un paciente válido.";
 
+                if (nuevoHistorial.IdCita <= 0)
+                    return "Error: el historial debe estar asociado a una cita válida.";
 
-                nuevoHistorial.Estado = 1; // Activo por defecto
-                var insertado = await _repository.AddHistorialMedicoAsync(nuevoHistorial);
+                if (string.IsNullOrWhiteSpace(nuevoHistorial.Diagnostico))
+                    return "Error: el diagnóstico es requerido.";
 
-                if (insertado == null || insertado.IdHistorialMedico <= 0)
-                    return "Error: no se pudo agregar el historial médico";
+                // Validar duplicado
+                var existe = await _repository.ExisteHistorialDuplicadoAsync(
+                    nuevoHistorial.IdPaciente,
+                    nuevoHistorial.FechaHora
+                );
 
-                return "Historial médico agregado correctamente";
+                if (existe)
+                    return "Error: ya existe un historial registrado para este paciente en esa fecha.";
+
+                nuevoHistorial.Estado = 1;
+
+                await _repository.AddHistorialMedicoAsync(nuevoHistorial);
+                return "Historial médico agregado correctamente.";
             }
             catch (Exception ex)
             {
@@ -80,19 +63,45 @@ namespace SistemaCitasMedicas.Application.Services
             }
         }
 
-        // Caso de uso: Desactivar historial médico (soft delete)
+        public async Task<string> ModificarHistorialMedicoAsync(HistorialMedico historial)
+        {
+            var existente = await _repository.GetHistorialMedicoByIdAsync(historial.IdHistorialMedico);
+            if (existente == null)
+                return "Error: Historial no encontrado.";
+
+            // ACTUALIZAR TODOS LOS CAMPOS NUEVOS
+            existente.Notas = historial.Notas;
+            existente.Diagnostico = historial.Diagnostico;
+            existente.Tratamientos = historial.Tratamientos;
+            existente.CuadroMedico = historial.CuadroMedico;
+            existente.Alergias = historial.Alergias;
+            existente.AntecedentesFamiliares = historial.AntecedentesFamiliares;
+            existente.Observaciones = historial.Observaciones;
+            existente.FechaHora = historial.FechaHora;
+
+            await _repository.UpdateHistorialMedicoAsync(existente);
+            return "Historial médico modificado correctamente.";
+        }
+
         public async Task<string> DesactivarHistorialMedicoAsync(int id)
         {
-            if (id <= 0) return "Error: Id no válido";
+            var ok = await _repository.DesactivarHistorialMedicoAsync(id);
+            return ok ? "Historial médico desactivado exitosamente." :
+                        "Error: el historial no existe o ya está inactivo.";
+        }
 
-            var historial = await _repository.GetHistorialMedicoByIdAsync(id);
-            if (historial == null || historial.Estado == 0)
-                return "Error: el historial no existe o ya está inactivo.";
+        // 👉 NUEVO: Obtener historiales por paciente
+        public async Task<IEnumerable<HistorialMedico>> ObtenerHistorialesPorPacienteAsync(int idPaciente)
+        {
+            var historiales = await _repository.GetHistorialesMedicosAsync();
+            return historiales.Where(x => x.IdPaciente == idPaciente && x.Estado == 1);
+        }
 
-            historial.Estado = 0;
-            await _repository.UpdateHistorialMedicoAsync(historial);
-
-            return "Historial médico desactivado exitosamente.";
+        // 👉 NUEVO: Obtener historial por cita
+        public async Task<HistorialMedico?> ObtenerHistorialPorCitaAsync(int idCita)
+        {
+            var historiales = await _repository.GetHistorialesMedicosAsync();
+            return historiales.FirstOrDefault(x => x.IdCita == idCita && x.Estado == 1);
         }
     }
 }

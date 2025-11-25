@@ -18,6 +18,12 @@ namespace SistemaCitasMedicas.Domain.Entities
         [JsonIgnore]
         public Paciente? Paciente { get; set; }
 
+        [Required]
+        [Column("idcita")]
+        public int IdCita { get; set; }
+        [JsonIgnore]
+        public Cita? Cita { get; set; }
+
         [Column("notas")]
         public string Notas { get; set; }
 
@@ -28,8 +34,17 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("tratamientos")]
         public string Tratamientos { get; set; }
 
-        [Column("cuadro_medico")]
+        [Column("cuadroMedico")]
         public string CuadroMedico { get; set; }
+
+        [Column("alergias")]
+        public string? Alergias { get; set; }
+
+        [Column("antecedentesFamiliares")]
+        public string? AntecedentesFamiliares { get; set; }
+
+        [Column("observaciones")]
+        public string? Observaciones { get; set; }
 
         [Required]
         [Column("fechahora")]

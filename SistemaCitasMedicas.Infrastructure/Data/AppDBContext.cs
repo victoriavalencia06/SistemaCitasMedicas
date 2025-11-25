@@ -74,10 +74,18 @@ namespace SistemaCitasMedicas.Infrastructure.Data
                 .WithMany(u => u.Citas)
                 .HasForeignKey(c => c.IdUsuario);
 
+            // HistorialMedico - Paciente (1:1)
             modelBuilder.Entity<HistorialMedico>()
                 .HasOne(h => h.Paciente)
-                .WithOne(p => p.HistorialMedico)
-                .HasForeignKey<HistorialMedico>(h => h.IdPaciente);
+                .WithMany(p => p.Historiales)
+                .HasForeignKey(h => h.IdPaciente);
+
+            // HistorialMedico - Cita (N:1)
+            modelBuilder.Entity<HistorialMedico>()
+                .HasOne(h => h.Cita)
+                .WithMany(c => c.HistorialesMedicos)   // <-- WithMany en vez de WithOne
+                .HasForeignKey(h => h.IdCita)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DoctorEspecializacion>()
                 .HasOne(de => de.Doctor)

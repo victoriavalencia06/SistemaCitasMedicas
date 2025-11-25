@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -16,7 +17,7 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Column("idusuario")]
         public long IdUsuario { get; set; }
         [JsonIgnore]
-        public Usuario? Usuario { get; set; }
+        public Usuario? Usuario { get; set; } // nullable para evitar validaciones inesperadas
 
         [Required]
         [Column("idpaciente")]
@@ -37,5 +38,9 @@ namespace SistemaCitasMedicas.Domain.Entities
         [Required]
         [Column("estado")]
         public int Estado { get; set; }
+
+        // una cita puede tener cero o varios historiales
+        [JsonIgnore]
+        public ICollection<HistorialMedico>? HistorialesMedicos { get; set; } = new List<HistorialMedico>();
     }
 }

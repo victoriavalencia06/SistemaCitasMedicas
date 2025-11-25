@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Application.DTOs;
 using SistemaCitasMedicas.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,36 +48,115 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
+        // GET: api/historialmedico/paciente/5
+        [HttpGet("paciente/{idPaciente}")]
+        public async Task<ActionResult<IEnumerable<HistorialMedico>>> GetByPaciente(int idPaciente)
+        {
+            try
+            {
+                var historiales = await _historialMedicoService.ObtenerHistorialesPorPacienteAsync(idPaciente);
+                return Ok(historiales);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        // GET: api/historialmedico/cita/5
+        [HttpGet("cita/{idCita}")]
+        public async Task<ActionResult<HistorialMedico>> GetByCita(int idCita)
+        {
+            try
+            {
+                var historial = await _historialMedicoService.ObtenerHistorialPorCitaAsync(idCita);
+
+                if (historial == null)
+                    return NotFound($"No se encontró un historial médico para la cita con ID {idCita}");
+
+                return Ok(historial);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
         // POST: api/historialmedico/create
         [HttpPost("create")]
-        public async Task<IActionResult> Post([FromBody] HistorialMedico historialmedico)
+        public async Task<IActionResult> Post([FromBody] HistorialMedicoDTO dto)
         {
-            ModelState.Remove("Paciente");
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var resultado = await _historialMedicoService.AgregarHistorialMedicoAsync(historialmedico);
+                // Crear la entidad HistorialMedico desde el DTO
+                var historialmedico = new HistorialMedico
+                {
+                    IdPaciente = dto.IdPaciente,
+                    IdCita = dto.IdCita,
+                    Notas = dto.Notas,
+                    Diagnostico = dto.Diagnostico,
+                    Tratamientos = dto.Tratamientos,
+                    CuadroMedico = dto.CuadroMedico,
+                    Alergias = dto.Alergias,
+                    AntecedentesFamiliares = dto.AntecedentesFamiliares,
+                    Observaciones = dto.Observaciones,
+                    FechaHora = dto.FechaHora,
+                    Estado = dto.Estado,
+                    // Las propiedades de navegación se mantienen null por defecto
+                    Paciente = null,
+                    Cita = null
+                };
 
-            if (resultado.StartsWith("Error"))
-                return BadRequest(resultado);
+                var resultado = await _historialMedicoService.AgregarHistorialMedicoAsync(historialmedico);
 
-            return Ok(resultado);
+                if (resultado.StartsWith("Error"))
+                    return BadRequest(resultado);
+
+                return Ok(new { message = resultado });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
         // PUT: api/historialmedico/update/5
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] HistorialMedico historialmedico)
+        public async Task<IActionResult> Put(int id, [FromBody] HistorialMedicoDTO dto)
         {
             try
             {
-                historialmedico.IdHistorialMedico = id; // usa el id de la ruta
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                // Crear la entidad HistorialMedico desde el DTO
+                var historialmedico = new HistorialMedico
+                {
+                    IdHistorialMedico = id, // ID desde la ruta
+                    IdPaciente = dto.IdPaciente,
+                    IdCita = dto.IdCita,
+                    Notas = dto.Notas,
+                    Diagnostico = dto.Diagnostico,
+                    Tratamientos = dto.Tratamientos,
+                    CuadroMedico = dto.CuadroMedico,
+                    Alergias = dto.Alergias,
+                    AntecedentesFamiliares = dto.AntecedentesFamiliares,
+                    Observaciones = dto.Observaciones,
+                    FechaHora = dto.FechaHora,
+                    Estado = dto.Estado,
+                    Paciente = null,
+                    Cita = null
+                };
 
                 var resultado = await _historialMedicoService.ModificarHistorialMedicoAsync(historialmedico);
 
                 if (resultado.StartsWith("Error"))
                     return BadRequest(resultado);
 
-                return Ok(resultado);
+                return Ok(new { message = resultado });
             }
             catch (Exception ex)
             {
@@ -95,7 +175,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
                 if (resultado.StartsWith("Error"))
                     return BadRequest(resultado);
 
-                return Ok(resultado);
+                return Ok(new { message = resultado });
             }
             catch (Exception ex)
             {

@@ -1,8 +1,6 @@
 ﻿using SistemaCitasMedicas.Domain.Entities;
 using SistemaCitasMedicas.Domain.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Application.Services
@@ -10,73 +8,60 @@ namespace SistemaCitasMedicas.Application.Services
     public class PacienteService
     {
         private readonly IPacienteRepository _repository;
+
         public PacienteService(IPacienteRepository repository)
         {
             _repository = repository;
         }
 
-        // 1. Obtener todos los pacientes (activos e inactivos)
+        /// <summary>
+        /// Devuelve todos los pacientes.
+        /// </summary>
         public async Task<IEnumerable<Paciente>> ObtenerTodosPacientesAsync()
         {
             return await _repository.GetPacientesAsync();
         }
 
-        // 2. Obtener paciente por ID (solo activo)
+        /// <summary>
+        /// Obtiene un paciente por ID (debe estar activo).
+        /// </summary>
         public async Task<Paciente?> ObtenerPacientePorIdAsync(int idPaciente)
         {
-            if (idPaciente <= 0)
-                return null; // ID inválido
-
             var paciente = await _repository.GetPacienteByIdAsync(idPaciente);
 
-            if (paciente != null && paciente.Estado == 1) // 1 = Activo
-                return paciente;
-
-            return null; // No encontrado o inactivo
+            return (paciente != null && paciente.Estado == 1)
+                ? paciente
+                : null;
         }
 
-        // 3. Agregar nuevo paciente (validar duplicados)
+        /// <summary>
+        /// Agrega un nuevo paciente con validación de duplicados.
+        /// </summary>
         public async Task<string> AgregarPacienteAsync(Paciente nuevoPaciente)
         {
-            try
-            {
-                var pacientes = await _repository.GetPacientesAsync();
+            if (await _repository.ExistePacienteDuplicadoAsync(nuevoPaciente))
+                return "Error: Ya existe un paciente con los mismos datos.";
 
-                if (pacientes.Any(p =>
-                    p.Nombre.ToLower() == nuevoPaciente.Nombre.ToLower() &&
-                    p.Apellido.ToLower() == nuevoPaciente.Apellido.ToLower() &&
-                    p.FechaNacimiento == nuevoPaciente.FechaNacimiento))
-                {
-                    return "Error: Ya existe un paciente con los mismos datos";
-                }
+            nuevoPaciente.Estado = 1;
 
-                nuevoPaciente.Estado = 1; // Activo por defecto
+            var resultado = await _repository.AddPacienteAsync(nuevoPaciente);
 
-                var pacienteInsertado = await _repository.AddPacienteAsync(nuevoPaciente);
-
-                if (pacienteInsertado == null || pacienteInsertado.IdPaciente <= 0)
-                    return "Error: No se pudo agregar el paciente";
-
-                return "Paciente agregado correctamente";
-            }
-            catch (Exception ex)
-            {
-                return $"Error de servidor: {ex.Message}";
-            }
+            return resultado.IdPaciente > 0
+                ? "Paciente agregado correctamente."
+                : "Error: No se pudo registrar el paciente.";
         }
 
-        // 4. Modificar paciente existente
+        /// <summary>
+        /// Modifica un paciente existente.
+        /// </summary>
         public async Task<string> ModificarPacienteAsync(Paciente paciente)
         {
-            if (paciente.IdPaciente <= 0)
-                return "Error: Datos de paciente inválidos";
-
             var existente = await _repository.GetPacienteByIdAsync(paciente.IdPaciente);
 
             if (existente == null)
-                return "Error: Paciente no encontrado";
+                return "Error: Paciente no encontrado.";
 
-            // Actualizamos campos
+            // Actualizar campos
             existente.IdUsuario = paciente.IdUsuario;
             existente.Nombre = paciente.Nombre;
             existente.Apellido = paciente.Apellido;
@@ -88,17 +73,26 @@ namespace SistemaCitasMedicas.Application.Services
 
             await _repository.UpdatePacienteAsync(existente);
 
-            return "Paciente modificado correctamente";
+            return "Paciente modificado correctamente.";
         }
 
-        // Cambia estado a inactivo en lugar de eliminar
+        /// <summary>
+        /// Desactiva un paciente (eliminación lógica).
+        /// </summary>
         public async Task<string> DesactivaPacientePorIdAsync(int id)
         {
-            var doctor = await _repository.GetPacienteByIdAsync(id);
-            if (doctor == null || doctor.Estado == 0) return "Error: el paciente no existe o ya está inactivo.";
+            var paciente = await _repository.GetPacienteByIdAsync(id);
 
-            doctor.Estado = 0;
-            await _repository.UpdatePacienteAsync(doctor);
+            if (paciente == null)
+                return "Error: Paciente no encontrado.";
+
+            if (paciente.Estado == 0)
+                return "Error: El paciente ya está inactivo.";
+
+            paciente.Estado = 0;
+
+            await _repository.UpdatePacienteAsync(paciente);
+
             return "Paciente desactivado exitosamente.";
         }
     }

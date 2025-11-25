@@ -180,10 +180,18 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdHistorialMedico"));
 
+                    b.Property<string>("Alergias")
+                        .HasColumnType("longtext")
+                        .HasColumnName("alergias");
+
+                    b.Property<string>("AntecedentesFamiliares")
+                        .HasColumnType("longtext")
+                        .HasColumnName("antecedentesFamiliares");
+
                     b.Property<string>("CuadroMedico")
                         .IsRequired()
                         .HasColumnType("longtext")
-                        .HasColumnName("cuadro_medico");
+                        .HasColumnName("cuadro_Medico");
 
                     b.Property<string>("Diagnostico")
                         .IsRequired()
@@ -198,6 +206,10 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("fechahora");
 
+                    b.Property<int>("IdCita")
+                        .HasColumnType("int")
+                        .HasColumnName("idcita");
+
                     b.Property<int>("IdPaciente")
                         .HasColumnType("int")
                         .HasColumnName("idpaciente");
@@ -207,6 +219,10 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("notas");
 
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("longtext")
+                        .HasColumnName("observaciones");
+
                     b.Property<string>("Tratamientos")
                         .IsRequired()
                         .HasColumnType("longtext")
@@ -214,8 +230,9 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
 
                     b.HasKey("IdHistorialMedico");
 
-                    b.HasIndex("IdPaciente")
-                        .IsUnique();
+                    b.HasIndex("IdCita");
+
+                    b.HasIndex("IdPaciente");
 
                     b.ToTable("t_historial_medico", (string)null);
                 });
@@ -469,11 +486,19 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
 
             modelBuilder.Entity("SistemaCitasMedicas.Domain.Entities.HistorialMedico", b =>
                 {
-                    b.HasOne("SistemaCitasMedicas.Domain.Entities.Paciente", "Paciente")
-                        .WithOne("HistorialMedico")
-                        .HasForeignKey("SistemaCitasMedicas.Domain.Entities.HistorialMedico", "IdPaciente")
+                    b.HasOne("SistemaCitasMedicas.Domain.Entities.Cita", "Cita")
+                        .WithMany("HistorialesMedicos")
+                        .HasForeignKey("IdCita")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SistemaCitasMedicas.Domain.Entities.Paciente", "Paciente")
+                        .WithMany("Historiales")
+                        .HasForeignKey("IdPaciente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cita");
 
                     b.Navigation("Paciente");
                 });
@@ -519,6 +544,11 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
                     b.Navigation("Rol");
                 });
 
+            modelBuilder.Entity("SistemaCitasMedicas.Domain.Entities.Cita", b =>
+                {
+                    b.Navigation("HistorialesMedicos");
+                });
+
             modelBuilder.Entity("SistemaCitasMedicas.Domain.Entities.Doctor", b =>
                 {
                     b.Navigation("Citas");
@@ -540,7 +570,7 @@ namespace SistemaCitasMedicas.Infrastructure.Migrations
                 {
                     b.Navigation("Citas");
 
-                    b.Navigation("HistorialMedico");
+                    b.Navigation("Historiales");
                 });
 
             modelBuilder.Entity("SistemaCitasMedicas.Domain.Entities.Rol", b =>

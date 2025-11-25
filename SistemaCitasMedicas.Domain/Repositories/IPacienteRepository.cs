@@ -1,8 +1,5 @@
 ﻿using SistemaCitasMedicas.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Domain.Repositories
@@ -23,5 +20,8 @@ namespace SistemaCitasMedicas.Domain.Repositories
 
         // Eliminar un paciente por su id
         Task<bool> DeletePacienteAsync(int id);
+
+        // 🔍 NUEVO: Validar si existe paciente duplicado
+        Task<bool> ExistePacienteDuplicadoAsync(Paciente paciente);
     }
 }

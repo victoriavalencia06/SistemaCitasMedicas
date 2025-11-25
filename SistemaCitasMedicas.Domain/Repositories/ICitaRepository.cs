@@ -1,15 +1,12 @@
 ﻿using SistemaCitasMedicas.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Domain.Repositories
 {
     public interface ICitaRepository
     {
-        // Obtener todas las citas
+        // Obtener todas las citas con relaciones
         Task<IEnumerable<Cita>> GetCitasAsync();
 
         // Obtener una cita por su id
@@ -23,5 +20,8 @@ namespace SistemaCitasMedicas.Domain.Repositories
 
         // Eliminar una cita por su id
         Task<bool> DeleteCitaAsync(int id);
+
+        // Validar si una cita ya existe (paciente + fecha/hora)
+        Task<bool> ExisteCitaDuplicadaAsync(Cita cita);
     }
 }

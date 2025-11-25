@@ -2,7 +2,6 @@
 using SistemaCitasMedicas.Domain.Entities;
 using SistemaCitasMedicas.Domain.Repositories;
 using SistemaCitasMedicas.Infrastructure.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,12 +20,9 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
         {
             return await _context.Citas
                 .Include(c => c.Paciente)
-                    .ThenInclude(p => p.Usuario) // si el nombre está en Usuario
                 .Include(c => c.Doctor)
-                    .ThenInclude(d => d.Usuario) // si el nombre está en Usuario
                 .ToListAsync();
         }
-
 
         public async Task<Cita> GetCitaByIdAsync(int id)
         {
@@ -55,6 +51,16 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             _context.Citas.Remove(cita);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        // Validar si ya existe una cita para un paciente en la misma fecha y hora
+        public async Task<bool> ExisteCitaDuplicadaAsync(Cita cita)
+        {
+            return await _context.Citas.AnyAsync(c =>
+                c.IdPaciente == cita.IdPaciente &&
+                c.FechaHora == cita.FechaHora &&
+                c.IdCita != cita.IdCita // permite actualizar citas sin caer en falso duplicado
+            );
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using SistemaCitasMedicas.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Domain.Repositories
@@ -21,7 +18,13 @@ namespace SistemaCitasMedicas.Domain.Repositories
         // Actualizar existente
         Task<HistorialMedico> UpdateHistorialMedicoAsync(HistorialMedico historialMedico);
 
-        // Baja lógica: cambia estado a 0
+        // Baja lógica
         Task<bool> DesactivarHistorialMedicoAsync(int id);
+
+        // Validar si existe historial duplicado (por paciente + fecha)
+        Task<bool> ExisteHistorialDuplicadoAsync(int idPaciente, DateTime fecha);
+
+        Task<IEnumerable<HistorialMedico>> GetHistorialesByPacienteAsync(int idPaciente);
+        Task<HistorialMedico?> GetHistorialByCitaAsync(int idCita);
     }
 }

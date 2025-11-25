@@ -23,79 +23,58 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
         [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Paciente>>> Get()
         {
-            try
-            {
-                var pacientes = await _pacienteService.ObtenerTodosPacientesAsync();
-                return Ok(pacientes);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            var pacientes = await _pacienteService.ObtenerTodosPacientesAsync();
+            return Ok(pacientes);
         }
 
         // GET: api/paciente/get/5
         [HttpGet("get/{id}")]
         public async Task<ActionResult<Paciente>> GetById(int id)
         {
-            try
-            {
-                var paciente = await _pacienteService.ObtenerPacientePorIdAsync(id);
-                if (paciente == null)
-                    return NotFound($"No se encontró un paciente activo con ID {id}");
+            var paciente = await _pacienteService.ObtenerPacientePorIdAsync(id);
 
-                return Ok(paciente);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            if (paciente == null)
+                return NotFound($"No se encontró un paciente activo con el ID {id}.");
+
+            return Ok(paciente);
         }
 
         // POST: api/paciente/create
         [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] Paciente paciente)
         {
-            ModelState.Remove("Usuario");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var resultado = await _pacienteService.AgregarPacienteAsync(paciente);
 
-            if (resultado.StartsWith("Error"))
-                return BadRequest(resultado);
-
-            return Ok(resultado);
+            return resultado.StartsWith("Error")
+                ? BadRequest(resultado)
+                : Ok(resultado);
         }
 
-        // PUT: api/paciente/update/5
+        // POST: api/paciente/update/5
         [HttpPut("update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Paciente paciente)
         {
-            try
-            {
-                paciente.IdPaciente = id; // Forzamos que coincida con el ID de la URL
+            paciente.IdPaciente = id;
 
-                var resultado = await _pacienteService.ModificarPacienteAsync(paciente);
+            var resultado = await _pacienteService.ModificarPacienteAsync(paciente);
 
-                if (resultado.StartsWith("Error"))
-                    return BadRequest(resultado);
-
-                return Ok(resultado);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+            return resultado.StartsWith("Error")
+                ? BadRequest(resultado)
+                : Ok(resultado);
         }
 
-        // DELETE: api/paciente/delete/5
+        // POST: api/paciente/delete
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult<string>> Delete(int id)
         {
             var resultado = await _pacienteService.DesactivaPacientePorIdAsync(id);
-            return resultado.StartsWith("Error") ? NotFound(resultado) : Ok(resultado);
+
+            return resultado.StartsWith("Error")
+                ? NotFound(resultado)
+                : Ok(resultado);
         }
     }
 }

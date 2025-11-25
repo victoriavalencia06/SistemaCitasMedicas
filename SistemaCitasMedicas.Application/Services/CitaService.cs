@@ -41,14 +41,9 @@ namespace SistemaCitasMedicas.Application.Services
         {
             try
             {
-                var citas = await _repository.GetCitasAsync();
-
-                if (citas.Any(c =>
-                    c.IdPaciente == nuevaCita.IdPaciente &&
-                    c.FechaHora == nuevaCita.FechaHora))
-                {
+                // Validación: evitar citas duplicadas
+                if (await _repository.ExisteCitaDuplicadaAsync(nuevaCita))
                     return "Error: El paciente ya tiene una cita registrada en esa fecha y hora";
-                }
 
                 nuevaCita.Estado = 1; // Activa por defecto
 
@@ -68,26 +63,14 @@ namespace SistemaCitasMedicas.Application.Services
         // 4. Caso de uso: Modificar una cita existente
         public async Task<string> ModificarCitaAsync(Cita cita)
         {
-            if (cita.IdCita <= 0)
-                return "Error: Datos de cita inválidos";
-
             var existente = await _repository.GetCitaByIdAsync(cita.IdCita);
 
             if (existente == null)
                 return "Error: Cita no encontrada";
 
-            // Validar duplicado (paciente en misma fecha/hora, excluyendo la cita actual)
-            var citas = await _repository.GetCitasAsync();
-            if (citas.Any(c =>
-                c.IdPaciente == cita.IdPaciente &&
-                c.FechaHora == cita.FechaHora &&
-                c.IdCita != cita.IdCita))
-            {
-                return "Error: El paciente ya tiene una cita en esa fecha y hora";
-            }
+            if (await _repository.ExisteCitaDuplicadaAsync(cita))
+                return "Error: Ya existe una cita para el paciente en esa fecha y hora";
 
-            // Actualizamos los campos necesarios
-            existente.IdUsuario = cita.IdUsuario;
             existente.IdPaciente = cita.IdPaciente;
             existente.IdDoctor = cita.IdDoctor;
             existente.FechaHora = cita.FechaHora;
@@ -97,6 +80,7 @@ namespace SistemaCitasMedicas.Application.Services
 
             return "Cita modificada correctamente";
         }
+
 
         // Cambia estado a inactivo en lugar de eliminar
         public async Task<string> DesactivarCitaPorIdAsync(int id) 
