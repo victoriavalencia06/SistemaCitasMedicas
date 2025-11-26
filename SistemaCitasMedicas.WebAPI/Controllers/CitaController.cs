@@ -85,7 +85,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             {
                 var citas = await _citaService.ObtenerCitasPorMesAsync(year, month);
 
-                var dto = citas.Select(c => new ConteoCitas
+                var dto = citas.Select(c => new ConteoCitasDTO
                 {
                     IdCita = c.IdCita,
                     Paciente = c.Paciente != null ? (c.Paciente.Nombre ?? "") + " " + (c.Paciente.Apellido ?? "") : "Sin paciente",
@@ -110,7 +110,7 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             {
                 var citas = await _citaService.ObtenerCitasPorDiaAsync(date);
 
-                var dto = citas.Select(c => new ConteoCitas
+                var dto = citas.Select(c => new ConteoCitasDTO
                 {
                     IdCita = c.IdCita,
                     Paciente = c.Paciente != null ? (c.Paciente.Nombre ?? "") + " " + (c.Paciente.Apellido ?? "") : "Sin paciente",
@@ -142,6 +142,33 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
                 );
 
                 return Ok(new { counts = result });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        // GET api/cita/cupos-disponibles?date=2025-11-25&slotsPerDay=20
+        [HttpGet("cupos-disponibles")]
+        public async Task<IActionResult> GetAvailableSlots([FromQuery] DateTime? date, [FromQuery] int slotsPerDay = 20)
+        {
+            try
+            {
+                var target = (date?.Date ?? DateTime.UtcNow.Date);
+
+                // Obtener el conteo de confirmadas (Estado==1)
+                var confirmed = await _citaService.CountConfirmedByDayAsync(target);
+
+                var dto = new SistemaCitasMedicas.Application.DTOs.CuposDisponiblesDTO
+                {
+                    Fecha = target.ToString("yyyy-MM-dd"),
+                    TotalCupos = slotsPerDay,
+                    CitasConfirmadas = confirmed,
+                    CuposDisponibles = Math.Max(0, slotsPerDay - confirmed)
+                };
+
+                return Ok(dto);
             }
             catch (Exception ex)
             {

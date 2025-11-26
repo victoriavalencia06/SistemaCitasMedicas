@@ -21,7 +21,10 @@ namespace SistemaCitasMedicas.Domain.Repositories
         // Eliminar un paciente por su id
         Task<bool> DeletePacienteAsync(int id);
 
-        // 🔍 NUEVO: Validar si existe paciente duplicado
+        // Validar si existe paciente duplicado
         Task<bool> ExistePacienteDuplicadoAsync(Paciente paciente);
+
+        // Devuelve el total de pacientes
+        Task<int> GetTotalPatientsAsync();
     }
 }

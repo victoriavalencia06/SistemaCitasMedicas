@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Application.DTOs
 {
-    public class ConteoCitas
+    public class ConteoCitasDTO
     {
         public int IdCita { get; set; }
         public string Paciente { get; set; } = "";

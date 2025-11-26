@@ -33,5 +33,7 @@ namespace SistemaCitasMedicas.Domain.Repositories
         // Obtener conteos por día para un mes (fecha => cantidad)
         Task<Dictionary<DateTime, int>> GetCountsByMonthAsync(int year, int month);
 
+        // Contar citas confirmadas (Estado == 1) en un día
+        Task<int> CountConfirmedByDayAsync(DateTime date);
     }
 }

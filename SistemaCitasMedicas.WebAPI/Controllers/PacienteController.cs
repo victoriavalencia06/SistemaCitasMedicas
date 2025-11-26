@@ -39,6 +39,22 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             return Ok(paciente);
         }
 
+        // GET api/paciente/count
+        [HttpGet("count")]
+        public async Task<IActionResult> GetTotalPatients()
+        {
+            try
+            {
+                var total = await _pacienteService.GetTotalPatientsAsync();
+                // Devuelve un objeto claro; si prefieres un número plano puedes return Ok(total);
+                return Ok(new { totalPatients = total });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
         // POST: api/paciente/create
         [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] Paciente paciente)

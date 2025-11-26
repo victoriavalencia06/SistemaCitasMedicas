@@ -113,5 +113,20 @@ namespace SistemaCitasMedicas.Application.Services
         {
             return await _repository.GetCountsByMonthAsync(year, month);
         }
+
+        // Devuelve el número de citas confirmadas (Estado==1) en una fecha concreta
+        public async Task<int> CountConfirmedByDayAsync(DateTime date)
+        {
+            return await _repository.CountConfirmedByDayAsync(date.Date);
+        }
+
+        // Devuelve cupos disponibles para una fecha (regla simple: slotsPerDay - confirmed)
+        public async Task<int> GetAvailableSlotsAsync(DateTime? date = null, int slotsPerDay = 20)
+        {
+            var target = (date ?? DateTime.UtcNow).Date;
+            var confirmedCount = await CountConfirmedByDayAsync(target);
+            var available = Math.Max(0, slotsPerDay - confirmedCount);
+            return available;
+        }
     }
 }

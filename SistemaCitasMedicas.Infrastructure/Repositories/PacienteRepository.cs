@@ -16,9 +16,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             _context = context;
         }
 
-        /// <summary>s
-        /// Obtiene todos los pacientes (sin tracking para mejor rendimiento).
-        /// </summary>
         public async Task<IEnumerable<Paciente>> GetPacientesAsync()
         {
             return await _context.Pacientes
@@ -26,9 +23,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Obtiene un paciente por ID.
-        /// </summary>
         public async Task<Paciente?> GetPacienteByIdAsync(int id)
         {
             return await _context.Pacientes
@@ -36,9 +30,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.IdPaciente == id);
         }
 
-        /// <summary>
-        /// Valida si existe un paciente con los mismos datos.
-        /// </summary>
         public async Task<bool> ExistePacienteDuplicadoAsync(Paciente p)
         {
             return await _context.Pacientes.AnyAsync(x =>
@@ -48,9 +39,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             );
         }
 
-        /// <summary>
-        /// Inserta un paciente.
-        /// </summary>
         public async Task<Paciente> AddPacienteAsync(Paciente paciente)
         {
             _context.Pacientes.Add(paciente);
@@ -58,9 +46,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             return paciente;
         }
 
-        /// <summary>
-        /// Actualiza un paciente existente.
-        /// </summary>
         public async Task<Paciente> UpdatePacienteAsync(Paciente paciente)
         {
             _context.Pacientes.Update(paciente);
@@ -68,10 +53,6 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             return paciente;
         }
 
-        /// <summary>
-        /// Elimina físicamente un paciente (no recomendado).
-        /// Usado solo si la app lo requiere.
-        /// </summary>
         public async Task<bool> DeletePacienteAsync(int id)
         {
             var paciente = await _context.Pacientes.FindAsync(id);
@@ -80,6 +61,11 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             _context.Pacientes.Remove(paciente);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<int> GetTotalPatientsAsync()
+        {
+            return await _context.Pacientes.CountAsync(p => p.Estado == 1);
         }
     }
 }

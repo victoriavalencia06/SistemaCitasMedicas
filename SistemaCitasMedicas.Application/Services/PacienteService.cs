@@ -14,17 +14,11 @@ namespace SistemaCitasMedicas.Application.Services
             _repository = repository;
         }
 
-        /// <summary>
-        /// Devuelve todos los pacientes.
-        /// </summary>
         public async Task<IEnumerable<Paciente>> ObtenerTodosPacientesAsync()
         {
             return await _repository.GetPacientesAsync();
         }
 
-        /// <summary>
-        /// Obtiene un paciente por ID (debe estar activo).
-        /// </summary>
         public async Task<Paciente?> ObtenerPacientePorIdAsync(int idPaciente)
         {
             var paciente = await _repository.GetPacienteByIdAsync(idPaciente);
@@ -34,9 +28,6 @@ namespace SistemaCitasMedicas.Application.Services
                 : null;
         }
 
-        /// <summary>
-        /// Agrega un nuevo paciente con validación de duplicados.
-        /// </summary>
         public async Task<string> AgregarPacienteAsync(Paciente nuevoPaciente)
         {
             if (await _repository.ExistePacienteDuplicadoAsync(nuevoPaciente))
@@ -51,9 +42,6 @@ namespace SistemaCitasMedicas.Application.Services
                 : "Error: No se pudo registrar el paciente.";
         }
 
-        /// <summary>
-        /// Modifica un paciente existente.
-        /// </summary>
         public async Task<string> ModificarPacienteAsync(Paciente paciente)
         {
             var existente = await _repository.GetPacienteByIdAsync(paciente.IdPaciente);
@@ -76,9 +64,6 @@ namespace SistemaCitasMedicas.Application.Services
             return "Paciente modificado correctamente.";
         }
 
-        /// <summary>
-        /// Desactiva un paciente (eliminación lógica).
-        /// </summary>
         public async Task<string> DesactivaPacientePorIdAsync(int id)
         {
             var paciente = await _repository.GetPacienteByIdAsync(id);
@@ -94,6 +79,11 @@ namespace SistemaCitasMedicas.Application.Services
             await _repository.UpdatePacienteAsync(paciente);
 
             return "Paciente desactivado exitosamente.";
+        }
+
+        public async Task<int> GetTotalPatientsAsync()
+        {
+            return await _repository.GetTotalPatientsAsync();
         }
     }
 }

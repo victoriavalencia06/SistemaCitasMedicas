@@ -99,5 +99,16 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             // Convertir a Dictionary<DateTime,int>
             return counts.ToDictionary(x => x.Date, x => x.Count);
         }
+
+        public async Task<int> CountConfirmedByDayAsync(DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
+
+            // Asumimos que Estado == 1 es "Confirmada"
+            return await _context.Citas
+                .Where(c => c.FechaHora >= start && c.FechaHora < end && c.Estado == 1)
+                .CountAsync();
+        }
     }
 }
