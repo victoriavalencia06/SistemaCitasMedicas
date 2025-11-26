@@ -62,5 +62,42 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
                 c.IdCita != cita.IdCita // permite actualizar citas sin caer en falso duplicado
             );
         }
+
+        public async Task<IEnumerable<Cita>> GetCitasByRangeAsync(DateTime start, DateTime end)
+        {
+            return await _context.Citas
+                .Where(c => c.FechaHora >= start && c.FechaHora < end && c.Estado == 1)
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Cita>> GetCitasByDayAsync(DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
+
+            return await _context.Citas
+                .Where(c => c.FechaHora >= start && c.FechaHora < end && c.Estado == 1)
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
+                .OrderBy(c => c.FechaHora)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<DateTime, int>> GetCountsByMonthAsync(int year, int month)
+        {
+            var start = new DateTime(year, month, 1);
+            var end = start.AddMonths(1);
+
+            var counts = await _context.Citas
+                .Where(c => c.FechaHora >= start && c.FechaHora < end && c.Estado == 1)
+                .GroupBy(c => c.FechaHora.Date)
+                .Select(g => new { Date = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            // Convertir a Dictionary<DateTime,int>
+            return counts.ToDictionary(x => x.Date, x => x.Count);
+        }
     }
 }

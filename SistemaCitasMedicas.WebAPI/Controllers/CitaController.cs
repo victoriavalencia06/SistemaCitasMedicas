@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Application.Services;
+using SistemaCitasMedicas.Application.DTOs;
 using SistemaCitasMedicas.Domain.Entities;
 
 namespace SistemaCitasMedicas.WebAPI.Controllers
@@ -75,6 +76,79 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+        // GET api/cita/month?year=2025&month=11
+        [HttpGet("month")]
+        public async Task<IActionResult> GetByMonth([FromQuery] int year, [FromQuery] int month)
+        {
+            try
+            {
+                var citas = await _citaService.ObtenerCitasPorMesAsync(year, month);
+
+                var dto = citas.Select(c => new ConteoCitas
+                {
+                    IdCita = c.IdCita,
+                    Paciente = c.Paciente != null ? (c.Paciente.Nombre ?? "") + " " + (c.Paciente.Apellido ?? "") : "Sin paciente",
+                    Doctor = c.Doctor != null ? (c.Doctor.Nombre ?? "") + " " + (c.Doctor.Apellido ?? "") : "Sin doctor",
+                    FechaHora = c.FechaHora,
+                    Estado = c.Estado,
+                }).ToList();
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        // GET api/cita/day?date=2025-11-03
+        [HttpGet("day")]
+        public async Task<IActionResult> GetByDay([FromQuery] DateTime date)
+        {
+            try
+            {
+                var citas = await _citaService.ObtenerCitasPorDiaAsync(date);
+
+                var dto = citas.Select(c => new ConteoCitas
+                {
+                    IdCita = c.IdCita,
+                    Paciente = c.Paciente != null ? (c.Paciente.Nombre ?? "") + " " + (c.Paciente.Apellido ?? "") : "Sin paciente",
+                    Doctor = c.Doctor != null ? (c.Doctor.Nombre ?? "") + " " + (c.Doctor.Apellido ?? "") : "Sin doctor",
+                    FechaHora = c.FechaHora,
+                    Estado = c.Estado,
+                }).ToList();
+
+                return Ok(new { date = date.Date.ToString("yyyy-MM-dd"), appointments = dto });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        // GET api/cita/counts/month?year=2025&month=11
+        [HttpGet("counts/month")]
+        public async Task<IActionResult> GetCountsByMonth([FromQuery] int year, [FromQuery] int month)
+        {
+            try
+            {
+                var counts = await _citaService.ObtenerConteosPorMesAsync(year, month);
+
+                // Serializa DateTime.Date a yyyy-MM-dd string para JSON legible
+                var result = counts.ToDictionary(
+                    kv => kv.Key.ToString("yyyy-MM-dd"),
+                    kv => kv.Value
+                );
+
+                return Ok(new { counts = result });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
 
         // POST api/cita/create
         [HttpPost("create")]

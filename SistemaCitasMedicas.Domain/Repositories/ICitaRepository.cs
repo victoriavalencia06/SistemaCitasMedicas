@@ -23,5 +23,15 @@ namespace SistemaCitasMedicas.Domain.Repositories
 
         // Validar si una cita ya existe (paciente + fecha/hora)
         Task<bool> ExisteCitaDuplicadaAsync(Cita cita);
+
+        // Obtener citas dentro de un rango (útil para mes)
+        Task<IEnumerable<Cita>> GetCitasByRangeAsync(DateTime start, DateTime end);
+
+        // Obtener citas de un día (rango de 24h)
+        Task<IEnumerable<Cita>> GetCitasByDayAsync(DateTime date);
+
+        // Obtener conteos por día para un mes (fecha => cantidad)
+        Task<Dictionary<DateTime, int>> GetCountsByMonthAsync(int year, int month);
+
     }
 }

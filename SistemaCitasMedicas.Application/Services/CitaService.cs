@@ -92,5 +92,26 @@ namespace SistemaCitasMedicas.Application.Services
             await _repository.UpdateCitaAsync(doctor);
             return "Cita desactivado exitosamente.";
         }
+
+        // Obtener citas de un mes (rango)
+        public async Task<IEnumerable<Cita>> ObtenerCitasPorMesAsync(int year, int month)
+        {
+            if (month < 1 || month > 12) return Enumerable.Empty<Cita>();
+            var start = new DateTime(year, month, 1);
+            var end = start.AddMonths(1);
+            return await _repository.GetCitasByRangeAsync(start, end);
+        }
+
+        // Obtener citas de un día
+        public async Task<IEnumerable<Cita>> ObtenerCitasPorDiaAsync(DateTime date)
+        {
+            return await _repository.GetCitasByDayAsync(date);
+        }
+
+        // Obtener conteos por día para un mes
+        public async Task<Dictionary<DateTime, int>> ObtenerConteosPorMesAsync(int year, int month)
+        {
+            return await _repository.GetCountsByMonthAsync(year, month);
+        }
     }
 }
