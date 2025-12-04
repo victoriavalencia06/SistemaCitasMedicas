@@ -23,5 +23,11 @@ namespace SistemaCitasMedicas.Domain.Repositories
 
         // Eliminar una especialización por su id
         Task<bool> DeleteEspecializacionAsync(int id);
+
+        // Obtener cantidad de doctores por especialización
+        Task<IEnumerable<object>> GetDoctoresPorEspecializacionAsync();
+
+        // Obtener la especialización con más doctores
+        Task<object> GetEspecializacionConMasDoctoresAsync();
     }
 }

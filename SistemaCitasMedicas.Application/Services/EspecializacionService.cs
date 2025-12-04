@@ -104,6 +104,17 @@ namespace SistemaCitasMedicas.Application.Services
             return "Especialización desactivada exitosamente.";
         }
 
+        // Obtener doctores por especialización
+        public async Task<IEnumerable<object>> ObtenerDoctoresPorEspecializacionAsync()
+        {
+            return await _especializacionRepository.GetDoctoresPorEspecializacionAsync();
+        }
+
+        // Obtener la especialización con más doctores
+        public async Task<object> ObtenerEspecializacionConMasDoctoresAsync()
+        {
+            return await _especializacionRepository.GetEspecializacionConMasDoctoresAsync();
+        }
 
     }
 }

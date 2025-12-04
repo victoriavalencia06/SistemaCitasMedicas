@@ -46,6 +46,20 @@ namespace SistemaCitasMedicas.WebAPI.Controllers
             }
         }
 
+        [HttpGet("doctores-por-especializacion")]
+        public async Task<IActionResult> GetDoctoresPorEspecializacion()
+        {
+            var resultado = await _especializacionService.ObtenerDoctoresPorEspecializacionAsync();
+            return Ok(resultado);
+        }
+
+        [HttpGet("especializacion-mas-doctores")]
+        public async Task<IActionResult> GetEspecializacionConMasDoctores()
+        {
+            var resultado = await _especializacionService.ObtenerEspecializacionConMasDoctoresAsync();
+            return Ok(resultado);
+        }
+
         // POST: api/especializacion/create
         [HttpPost("create")]
         public async Task<ActionResult<string>> Post([FromBody] Especializacion especializacion)

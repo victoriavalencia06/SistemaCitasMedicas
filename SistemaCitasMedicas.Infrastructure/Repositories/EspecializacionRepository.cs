@@ -50,5 +50,35 @@ namespace SistemaCitasMedicas.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<object>> GetDoctoresPorEspecializacionAsync()
+        {
+            return await _context.Especializaciones
+                .Where(e => e.Estado == 1)
+                .Select(e => new
+                {
+                    EspecializacionId = e.IdEspecializacion,
+                    EspecializacionNombre = e.Nombre,
+                    CantidadDoctores = e.DoctorEspecializaciones
+                        .Count(de => de.Doctor.Estado == 1)
+                })
+                .OrderByDescending(x => x.CantidadDoctores)
+                .ToListAsync();
+        }
+
+        public async Task<object> GetEspecializacionConMasDoctoresAsync()
+        {
+            return await _context.Especializaciones
+                .Where(e => e.Estado == 1)
+                .Select(e => new
+                {
+                    EspecializacionId = e.IdEspecializacion,
+                    EspecializacionNombre = e.Nombre,
+                    CantidadDoctores = e.DoctorEspecializaciones
+                        .Count(de => de.Doctor.Estado == 1)
+                })
+                .OrderByDescending(x => x.CantidadDoctores)
+                .FirstOrDefaultAsync();
+        }
     }
 }
